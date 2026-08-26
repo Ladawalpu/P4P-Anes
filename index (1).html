@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>P4P AnesMNST</title>
+<meta name="theme-color" content="#157FA6">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root{
+    --teal:#157FA6; --teal-d:#0b5570; --teal-l:#e2f0f6;
+    --indigo:#5B4FCF; --indigo-d:#372a8c; --indigo-l:#ece9fb;
+    --amber:#ba7517; --amber-l:#faeeda;
+    --red:#a32d2d; --red-l:#fcebeb;
+    --bg:#f7f7f5; --card:#ffffff; --line:#e3e1d9;
+    --text:#2c2c2a; --text-2:#5f5e5a; --text-3:#888780;
+    --radius:14px;
+    --c0:#157FA6; --c0-l:#e2f0f6; --c0-d:#0b5570;
+    --c1:#0e9d78; --c1-l:#e0f6ee; --c1-d:#0a6b52;
+    --c2:#8354c9; --c2-l:#f0eafb; --c2-d:#4f3382;
+    --c3:#e0871f; --c3-l:#fcefdc; --c3-d:#8c520f;
+    --c4:#dd4f89; --c4-l:#fce9f1; --c4-d:#8f2f57;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);padding-bottom:88px;}
+  header{position:sticky;top:0;z-index:20;background:var(--hdr,var(--teal));color:#fff;padding:14px 16px calc(14px + env(safe-area-inset-top,0px));padding-top:calc(14px + env(safe-area-inset-top,0px));transition:background .2s;}
+  .header-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .header-left{display:flex;align-items:center;gap:10px;}
+  header h1{font-size:17px;margin:0;font-weight:600;}
+  .icon-btn{background:rgba(255,255,255,.15);border:none;color:#fff;width:36px;height:36px;border-radius:10px;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .sync-badge{font-size:11px;padding:4px 9px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;margin-top:6px;background:rgba(255,255,255,.15);}
+  .dot{width:7px;height:7px;border-radius:50%;background:#8ee0c4;}
+  .dot.off{background:#f0997b;}
+  main{padding:14px;max-width:520px;margin:0 auto;}
+  .card{background:var(--card);border-radius:var(--radius);border:1px solid var(--line);padding:16px;margin-bottom:14px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---------- Home ---------- */
+  .home-intro{color:var(--text-2);font-size:13px;margin:2px 0 18px;line-height:1.6;}
+  .app-tile{display:flex;align-items:center;gap:14px;padding:20px;border-radius:18px;border:1px solid var(--line);margin-bottom:14px;background:var(--card);position:relative;overflow:hidden;}
+  .app-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--tile-c);}
+  .app-tile .emoji{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:var(--tile-l);flex-shrink:0;}
+  .app-tile .tt{flex:1;}
+  .app-tile .tt h2{margin:0 0 3px;font-size:16px;color:var(--tile-d);}
+  .app-tile .tt p{margin:0;font-size:12.5px;color:var(--text-2);line-height:1.5;}
+  .app-tile .arrow{color:var(--tile-d);font-size:20px;}
+  .tile-assistant{--tile-c:var(--teal);--tile-l:var(--teal-l);--tile-d:var(--teal-d);}
+  .tile-nurse{--tile-c:var(--indigo);--tile-l:var(--indigo-l);--tile-d:var(--indigo-d);}
+
+  /* ---------- form pieces (shared) ---------- */
+  label.field-label{font-size:13px;color:var(--text-2);font-weight:600;display:block;margin-bottom:8px;}
+  select{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:14px;background:#fff;color:var(--text);appearance:none;}
+  select:focus{outline:2px solid var(--focus,var(--teal));}
+  input[type="text"].date-select{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:#fff;color:var(--text);}
+  input[type="text"].date-select:focus{outline:2px solid var(--focus,var(--teal));}
+  .cal-monthlabel{text-align:center;font-weight:700;font-size:15px;margin-bottom:10px;color:var(--text);}
+  .cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px;}
+  .cal-weekdays span{text-align:center;font-size:11px;color:var(--text-3);font-weight:600;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:14px;color:var(--text);}
+  .cal-day:not(.blank){cursor:pointer;background:var(--bg);}
+  .cal-day.blank{visibility:hidden;}
+  .cal-day.today{border:1.5px solid var(--focus,var(--teal));}
+  .cal-day.sel{background:var(--focus,var(--teal));color:#fff;font-weight:700;}
+
+  .cat{margin-bottom:10px;border-left:4px solid transparent;overflow:hidden;}
+  .cat-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;margin:-16px -16px 0 -16px;border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;}
+  .cat-head h3{margin:0;font-size:15px;font-weight:700;}
+  .cat-count{font-size:12px;padding:2px 9px;border-radius:20px;font-weight:600;}
+  .chev{transition:transform .15s;}
+  .cat.open .chev{transform:rotate(180deg);}
+  .cat-body{display:none;padding-top:4px;}
+  .cat.open .cat-body{display:block;}
+  .cat.open{border-left-color:var(--cat-c);}
+  .cat-head{background:var(--cat-l);}
+  .cat-head h3{color:var(--cat-d);}
+  .cat-count{background:var(--card);color:var(--cat-d);}
+  .chev{color:var(--cat-d);}
+  .cat .stepper button{color:var(--cat-d);border-color:var(--cat-l);}
+  .cat .stepper button:active{background:var(--cat-l);}
+  .cat-c0{--cat-c:var(--c0);--cat-l:var(--c0-l);--cat-d:var(--c0-d);}
+  .cat-c1{--cat-c:var(--c1);--cat-l:var(--c1-l);--cat-d:var(--c1-d);}
+  .cat-c2{--cat-c:var(--c2);--cat-l:var(--c2-l);--cat-d:var(--c2-d);}
+  .cat-c3{--cat-c:var(--c3);--cat-l:var(--c3-l);--cat-d:var(--c3-d);}
+  .cat-c4{--cat-c:var(--c4);--cat-l:var(--c4-l);--cat-d:var(--c4-d);}
+
+  .item-row{display:flex;align-items:center;justify-content:space-between;padding:11px 4px;border-top:1px solid var(--line);gap:10px;}
+  .item-name{font-size:14px;line-height:1.4;flex:1;}
+  .item-unit{font-size:12px;color:var(--text-3);}
+  .item-detail{font-size:11px;color:var(--text-3);opacity:.8;margin-top:1px;}
+  .stepper{display:flex;align-items:center;gap:0;flex-shrink:0;}
+  .stepper button{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--line);background:#fff;font-size:18px;}
+  .stepper .val{width:32px;text-align:center;font-size:15px;font-weight:600;}
+
+  .footer-bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));z-index:20;}
+  .footer-bar.hidden{display:none;}
+  .footer-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+  .total{flex:1;}
+  .total .n{font-size:20px;font-weight:700;color:var(--tot-c,var(--teal-d));}
+  .total .l{font-size:11px;color:var(--text-3);}
+  .submit-btn{background:var(--btn,var(--teal));color:#fff;border:none;padding:14px 22px;border-radius:12px;font-size:15px;font-weight:600;flex:1.4;}
+  .submit-btn:disabled{background:#c9c7bd;}
+
+  .tabs{display:flex;gap:6px;margin-bottom:14px;}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:var(--card);border:1px solid var(--line);color:var(--text-2);}
+  .tab.active{background:var(--btn,var(--teal));color:#fff;border-color:var(--btn,var(--teal));}
+  .hist-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;}
+  .hist-top{display:flex;justify-content:space-between;align-items:center;}
+  .hist-loc{font-weight:600;font-size:14px;}
+  .hist-time{font-size:12px;color:var(--text-3);}
+  .hist-pts{font-size:13px;color:var(--tot-c,var(--teal-d));margin-top:3px;}
+  .hist-pending{font-size:11px;color:var(--amber);background:var(--amber-l);padding:2px 8px;border-radius:20px;display:inline-block;margin-top:6px;}
+  .hist-actions{display:flex;gap:8px;margin-top:10px;}
+  .hist-actions button{font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--text-2);}
+  .hist-actions .del{color:var(--red);border-color:#f0c0c0;}
+  .empty{text-align:center;color:var(--text-3);padding:40px 20px;font-size:13px;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:50;}
+  .modal-bg.show{display:flex;}
+  .modal{background:var(--card);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:20px;max-height:80vh;overflow:auto;}
+  .modal h3{margin-top:0;font-size:16px;}
+  .modal input{width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid var(--line);font-size:15px;margin-bottom:12px;}
+  .modal-row{display:flex;gap:10px;margin-top:6px;}
+  .modal-row button{flex:1;padding:12px;border-radius:10px;border:none;font-size:14px;font-weight:600;}
+  .btn-primary{background:var(--teal);color:#fff;}
+  .btn-secondary{background:var(--bg);color:var(--text-2);border:1px solid var(--line) !important;}
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2c2c2a;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast.show{opacity:1;}
+  .hint{font-size:12px;color:var(--text-3);margin-top:4px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="header-left">
+      <button class="icon-btn" id="backBtn" style="display:none;" aria-label="กลับ">←</button>
+      <h1 id="headerTitle">P4P AnesMNST</h1>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="ตั้งค่า">⚙</button>
+  </div>
+  <div class="sync-badge" id="syncBadge"><span class="dot" id="syncDot"></span><span id="syncText">กำลังตรวจสอบ...</span></div>
+</header>
+
+<main>
+  <!-- ================= HOME ================= -->
+  <section class="screen active" id="screen-home">
+    <p class="home-intro">เลือกประเภทงานที่จะบันทึกภาระงานวันนี้</p>
+    <div class="app-tile tile-assistant" data-goto="assistant">
+      <div class="emoji">🩺</div>
+      <div class="tt"><h2>P4P ผู้ช่วย</h2><p>บันทึกกิจกรรมภาระงานตามจุดปฏิบัติงาน</p></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="app-tile tile-nurse" data-goto="nurse">
+      <div class="emoji">💉</div>
+      <div class="tt"><h2>P4P Nurse</h2><p>บันทึกภาระงานวิสัญญีพยาบาล แยกตามเวรและอัตรากำลัง</p></div>
+      <div class="arrow">›</div>
+    </div>
+  </section>
+
+  <!-- ================= ASSISTANT ================= -->
+  <section class="screen" id="screen-assistant" data-app="assistant" data-accent="teal">
+    <div class="tabs">
+      <div class="tab active" data-tab="form">กรอกข้อมูล</div>
+      <div class="tab" data-tab="history">ประวัติวันนี้</div>
+    </div>
+    <div class="view-form">
+      <div class="card">
+        <label class="field-label">จุดปฏิบัติงานวันนี้</label>
+        <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
+      </div>
+      <div class="card zero-card">
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;margin:0;">
+          <input type="checkbox" class="zero-confirm" style="width:20px;height:20px;flex-shrink:0;">
+          <span>ไม่มีเคส/ไม่มีงานที่จุดนี้วันนี้ (ยืนยันเป็น 0)</span>
+        </label>
+      </div>
+      <div class="categories-wrap"></div>
+    </div>
+    <div class="view-history" style="display:none;"><div class="history-list"></div></div>
+  </section>
+
+  <!-- ================= NURSE ================= -->
+  <section class="screen" id="screen-nurse" data-app="nurse" data-accent="indigo">
+    <div class="tabs">
+      <div class="tab active" data-tab="form">กรอกข้อมูล</div>
+      <div class="tab" data-tab="history">ประวัติวันนี้</div>
+    </div>
+    <div class="view-form">
+      <div class="card">
+        <label class="field-label">วันที่ปฏิบัติงาน</label>
+        <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
+        <label class="field-label" style="margin-top:14px;">เวร</label>
+        <select class="shift-select">
+          <option value="">-- เลือกเวร --</option>
+          <option value="เช้าในเวลา">เช้าในเวลา</option>
+          <option value="เช้านอกเวลา">เช้านอกเวลา</option>
+          <option value="บ่าย">บ่าย</option>
+          <option value="ดึก">ดึก</option>
+        </select>
+      </div>
+      <div class="card">
+        <label class="field-label">จุดปฏิบัติงาน</label>
+        <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
+      </div>
+      <div class="card zero-card">
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;margin:0;">
+          <input type="checkbox" class="zero-confirm" style="width:20px;height:20px;flex-shrink:0;">
+          <span>ไม่มีเคส/ไม่มีงานที่จุดนี้เวรนี้ (ยืนยันเป็น 0)</span>
+        </label>
+      </div>
+      <div class="categories-wrap"></div>
+    </div>
+    <div class="view-history" style="display:none;"><div class="history-list"></div></div>
+
+  </section>
+</main>
+
+<div class="footer-bar hidden" id="footerBar">
+  <div class="footer-inner">
+    <div class="total">
+      <div class="n" id="totalDisplay">0</div>
+      <div class="l" id="totalLabel">คะแนนรวมของรายการนี้</div>
+    </div>
+    <button class="submit-btn" id="submitBtn" disabled>บันทึก</button>
+  </div>
+</div>
+
+<div class="modal-bg" id="calendarModal">
+  <div class="modal">
+    <h3>เลือกวันที่ปฏิบัติงาน</h3>
+    <div class="cal-monthlabel" id="calMonthLabel"></div>
+    <div class="cal-weekdays"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="modal-row">
+      <button class="btn-secondary" id="calCancel">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <h3>ตั้งค่าการซิงก์ข้อมูล</h3>
+    <label class="field-label">Web App URL (จาก Google Apps Script)</label>
+    <input type="text" id="webAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="hint">ใช้ URL เดียวกันได้ทั้ง P4P ผู้ช่วยและ P4P Nurse ระบบจะแยกชีตให้อัตโนมัติ ดูวิธีตั้งค่าใน README.md</div>
+    <div class="modal-row">
+      <button class="btn-secondary" id="settingsCancel">ปิด</button>
+      <button class="btn-primary" id="settingsSave">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   ข้อมูลอ้างอิง: จุดปฏิบัติงาน / หมวดกิจกรรม / ค่าคงที่
+===================================================================== */
+
+const ASSISTANT_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","RRช6","501","502","503","504","505","506","507","Endo1","Endo2","Endo3","RRช5","สูติ1","สูติ2","สูติ3","RRสูติ","PAC","Supply","คลัง","ธุรการ"];
+
+const ASSISTANT_CATEGORIES = [
+  {name:"งานทั่วไป", items:[
+    {id:"g1",label:"รับ-ส่งเวร",unit:"ครั้ง",weight:1.065},
+    {id:"g2",label:"ทำ I/O",unit:"ราย",weight:0.426},
+    {id:"g3",label:"ช่วยทีม CPR",unit:"ราย",weight:2.130},
+    {id:"g4",label:"เตรียมตรวจพิเศษ/หัตถการต่างๆ",unit:"ราย",weight:1.420},
+    {id:"g5",label:"จำหน่ายผู้ป่วยจากห้อง",unit:"ราย",weight:3.195},
+    {id:"g6",label:"ดูแล/ทำความสะอาดอุปกรณ์/สิ่งแวดล้อม",unit:"ครั้ง",weight:3.190},
+    {id:"g7",label:"ช่วยประเมินก่อนรับบริการทางวิสัญญี",unit:"ราย",weight:1.850},
+    {id:"g8",label:"ช่วย GA",unit:"ราย",weight:10.650},
+    {id:"g9",label:"ช่วย RA",unit:"ราย",weight:6.390},
+    {id:"g10",label:"ช่วยพักฟื้น",unit:"ราย",weight:1.704},
+    {id:"g11",label:"ผู้ป่วยเสี่ยงตกเตียง/ดึงสายอุปกรณ์ ท่อ",unit:"เวร",weight:1.775},
+    {id:"g12",label:"ลงข้อมูลค่าใช้จ่าย",unit:"ราย",weight:0.213},
+    {id:"g13",label:"ช่วยพิมพ์เอกสาร",unit:"ราย",weight:0.355},
+  ]},
+  {name:"อุปกรณ์", items:[
+    {id:"e1",label:"OK ของ",unit:"ครั้ง",weight:0.710},
+    {id:"e2",label:"เตรียม Set ส่ง Supply",unit:"ครั้ง",weight:1.065},
+    {id:"e3",label:"ล้างตู้เย็น",unit:"ครั้ง",weight:2.130},
+    {id:"e4",label:"ดูแลและแยกขยะ",unit:"วัน",weight:2.130},
+    {id:"e5",label:"เตรียมอุปกรณ์ A-line",unit:"ครั้ง",weight:1.065},
+    {id:"e6",label:"เตรียมอุปกรณ์ C-line",unit:"ครั้ง",weight:1.065},
+    {id:"e7",label:"เตรียมอุปกรณ์ Epidural",unit:"ครั้ง",weight:1.065},
+    {id:"e8",label:"เตรียมอุปกรณ์ Fiber Optic",unit:"ครั้ง",weight:1.065},
+  ]},
+  {name:"บริการ", items:[
+    {id:"s1",label:"ส่ง Lab",unit:"ครั้ง",weight:0.710},
+    {id:"s2",label:"ขอ/รับเลือด",unit:"ครั้ง",weight:0.355},
+    {id:"s3",label:"รับยา/สารน้ำ",unit:"ครั้ง",weight:1.065},
+  ]},
+  {name:"ธุรการ", items:[
+    {id:"a1",label:"ประสานหน่วยงานอื่น",unit:"ครั้ง",weight:4.260},
+    {id:"a2",label:"เบิกวัสดุการแพทย์",unit:"ครั้ง",weight:2.130},
+    {id:"a3",label:"เบิกวัสดุสำนักงาน",unit:"ครั้ง",weight:3.195},
+    {id:"a4",label:"รับวัสดุการแพทย์",unit:"ครั้ง",weight:1.065},
+    {id:"a5",label:"รับวัสดุสำนักงาน",unit:"ครั้ง",weight:2.130},
+    {id:"a6",label:"ตรวจสอบความพร้อมอุปกรณ์",unit:"ครั้ง",weight:0.710},
+    {id:"a7",label:"รับวัสดุค้างจ่าย",unit:"ครั้ง",weight:1.065},
+    {id:"a8",label:"ส่งซ่อมวัสดุ/ครุภัณฑ์ชำรุด",unit:"ครั้ง",weight:2.130},
+    {id:"a9",label:"รับของซ่อมแล้วเสร็จ",unit:"ครั้ง",weight:1.065},
+    {id:"a10",label:"เบิก/รับ น้ำยาและเวชภัณฑ์",unit:"ครั้ง",weight:2.130},
+    {id:"a11",label:"เปลี่ยนน้ำยาต่างๆและติดป้ายหมดอายุ",unit:"ครั้ง",weight:2.130},
+    {id:"a12",label:"เบิกอาหาร",unit:"ครั้ง",weight:0.710},
+    {id:"a13",label:"เบิกผ้า",unit:"ครั้ง",weight:0.355},
+  ]},
+  {name:"งาน Supply", items:[
+    {id:"p1",label:"เตรียมอุปกรณ์การล้าง",unit:"ครั้ง",weight:0.355},
+    {id:"p2",label:"เตรียมตู้อบแห้ง",unit:"ครั้ง",weight:0.355},
+    {id:"p3",label:"เตรียมน้ำยา",unit:"ครั้ง",weight:0.710},
+    {id:"p4",label:"แยก/นับเครื่องมือก่อนล้าง",unit:"ครั้ง",weight:7.100},
+    {id:"p5",label:"Clean อุปกรณ์",unit:"รอบ",weight:7.810},
+    {id:"p6",label:"Clean อ่างล้าง/อุปกรณ์ขัดล้าง",unit:"ครั้ง",weight:1.065},
+    {id:"p7",label:"Clean ตู้อบแห้ง/เครื่องล้าง",unit:"ครั้ง",weight:0.710},
+    {id:"p8",label:"เตรียมอุปกรณ์สำหรับบรรจุหีบห่อ ตัดซองบรรจุ",unit:"ครั้ง",weight:4.260},
+    {id:"p9",label:"แยกประเภท/ตรวจนับก่อน pack",unit:"รอบ",weight:4.970},
+    {id:"p10",label:"ดูแลความสะอาด/เตรียมหีบห่อตามชนิดของ Set",unit:"ครั้ง",weight:7.810},
+    {id:"p11",label:"บันทึกจำนวนอุปกรณ์ที่จัดเตรียม",unit:"ครั้ง",weight:1.420},
+    {id:"p12",label:"ดูแลความสะอาดบริเวณห้องทำงาน",unit:"ครั้ง",weight:0.710},
+    {id:"p13",label:"จัดเก็บเข้าชั้นตามชนิด/ยึดหลัก FIFO",unit:"รอบ",weight:4.260},
+    {id:"p14",label:"ตรวจสอบ/บันทึกอุณหภูมิตู้ควบคุมต่างๆ",unit:"เครื่อง",weight:0.355},
+    {id:"p15",label:"Clean ชั้นวางอุปกรณ์",unit:"ห้อง",weight:1.420},
+  ]},
+];
+
+const NURSE_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","501","502","503","504","505","506","507","508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
+
+const NURSE_CATEGORIES = [
+  {name:"กิจกรรมหลัก P4P วิสัญญีพยาบาล", weightLabel:"แต้ม/ราย", productivity:true, items:[
+    {id:"pv",  label:"การพยาบาลก่อนผ่าตัด (Pre visit)", unit:"ราย", weight:37.5,  detail:"30 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
+    {id:"ga",  label:"GA", unit:"ราย", weight:600,   detail:"150 นาที × น้ำหนัก 2 × บุคลากร 2"},
+    {id:"ra",  label:"RA", unit:"ราย", weight:225,   detail:"90 นาที × น้ำหนัก 1.25 × บุคลากร 2"},
+    {id:"sp",  label:"หัตถการพิเศษ (Cutdown, Bone marrow, 2-3 lumen, A-line, Nerve Block)", unit:"ราย", weight:15, detail:"15 นาที × น้ำหนัก 1 × บุคลากร 1"},
+    {id:"cpr", label:"Resuscitate / ช่วยฟื้นคืนชีพ", unit:"ราย", weight:240,  detail:"60 นาที × น้ำหนัก 2 × บุคลากร 2"},
+    {id:"em",  label:"หัตถการฉุกเฉิน (ช่วยใส่ ICD, Tracheotomy, ET tube ที่ ward)", unit:"ราย", weight:25, detail:"20 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
+    {id:"bl",  label:"การให้เลือด", unit:"ราย", weight:25,  detail:"20 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
+    {id:"po",  label:"การพยาบาลหลังผ่าตัด (Post visit)", unit:"ราย", weight:37.5, detail:"30 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
+    {id:"o2",  label:"ผู้ป่วยวิกฤตขณะเคลื่อนย้ายระหว่างหน่วยงาน (O2, Transfer)", unit:"ราย", weight:20, detail:"20 นาที × น้ำหนัก 1 × บุคลากร 1"},
+    {id:"nb",  label:"ดูแลทารกแรกเกิดในห้องคลอด/ห้องผ่าตัด", unit:"ราย", weight:25, detail:"20 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
+    {id:"rr",  label:"การพยาบาลผู้ป่วยใน Recovery room", unit:"ราย", weight:96,  detail:"24 นาที × น้ำหนัก 2 × บุคลากร 2"},
+  ]},
+];
+
+/* =====================================================================
+   Storage helpers (fallback to memory if localStorage is blocked,
+   e.g. inside a sandboxed preview)
+===================================================================== */
+let storageOK = true;
+const memStore = {};
+try{ localStorage.setItem('__test__','1'); localStorage.removeItem('__test__'); }catch(e){ storageOK = false; }
+function storeGet(key){ try{ return storageOK ? localStorage.getItem(key) : (memStore[key] ?? null); }catch(e){ return memStore[key] ?? null; } }
+function storeSet(key, val){ try{ if(storageOK) localStorage.setItem(key, val); else memStore[key] = val; }catch(e){ memStore[key] = val; } }
+
+const QUEUE_KEY = "p4p_anesmnst_queue_v1";
+const URL_KEY = "p4p_anesmnst_webapp_url";
+const DEFAULT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzGwj217zJp7zdVx1lNqb7W8Jw5NCfpPBNjFH0IHwWycSMcNs-ArV2Y2sqUxgisl6jWaA/exec";
+function loadQueue(){ try{ return JSON.parse(storeGet(QUEUE_KEY) || "[]"); }catch(e){ return []; } }
+function saveQueue(q){ storeSet(QUEUE_KEY, JSON.stringify(q)); }
+function getWebAppUrl(){ return storeGet(URL_KEY) || DEFAULT_WEBAPP_URL; }
+function setWebAppUrl(u){ storeSet(URL_KEY, u); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return 'e' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+
+function thaiMonthFull(m){ return ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'][m]; }
+function formatDMY(iso){ const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; }
+
+let activeCalendarTarget = null;
+function buildCalendarGrid(selectedIso){
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstWeekday = new Date(year, month, 1).getDay();
+  const pad = n => String(n).padStart(2,'0');
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+  for(let i=0;i<firstWeekday;i++){
+    const blank = document.createElement('div');
+    blank.className = 'cal-day blank';
+    grid.appendChild(blank);
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    const iso = `${year}-${pad(month+1)}-${pad(d)}`;
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (iso===selectedIso ? ' sel' : '') + (iso===todayStr() ? ' today' : '');
+    cell.textContent = d;
+    cell.dataset.iso = iso;
+    grid.appendChild(cell);
+  }
+  document.getElementById('calMonthLabel').textContent = `${thaiMonthFull(month)} ${year+543}`;
+}
+function openCalendarFor(inputEl, onChangeCb){
+  activeCalendarTarget = { input: inputEl, onChange: onChangeCb };
+  buildCalendarGrid(inputEl.dataset.iso || todayStr());
+  document.getElementById('calendarModal').classList.add('show');
+}
+document.getElementById('calGrid').addEventListener('click', (e) => {
+  const cell = e.target.closest('.cal-day:not(.blank)');
+  if(!cell || !activeCalendarTarget) return;
+  activeCalendarTarget.input.dataset.iso = cell.dataset.iso;
+  activeCalendarTarget.input.value = formatDMY(cell.dataset.iso);
+  document.getElementById('calendarModal').classList.remove('show');
+  activeCalendarTarget.onChange();
+});
+document.getElementById('calCancel').addEventListener('click', () => document.getElementById('calendarModal').classList.remove('show'));
+
+/* =====================================================================
+   Generic module builder — powers both the Assistant and Nurse screens
+===================================================================== */
+function buildModule(cfg){
+  const section = document.getElementById('screen-' + cfg.appId);
+  const locSelect = section.querySelector('.loc-select');
+  const dateSelect = section.querySelector('.date-select');
+  const shiftSelect = section.querySelector('.shift-select');
+  const zeroConfirm = section.querySelector('.zero-confirm');
+  const wrap = section.querySelector('.categories-wrap');
+  const historyList = section.querySelector('.history-list');
+  let counts = {};
+  let selectedShift = null;
+
+  const allItems = {};
+  cfg.categories.forEach(c => c.items.forEach(i => allItems[i.id] = i));
+
+  cfg.locations.forEach(loc => {
+    const o = document.createElement('option');
+    o.value = loc; o.textContent = loc;
+    locSelect.appendChild(o);
+  });
+
+  cfg.categories.forEach((cat, ci) => {
+    const catEl = document.createElement('div');
+    catEl.className = 'cat card cat-c' + (ci % 5) + (ci === 0 ? ' open' : '');
+    catEl.innerHTML = `
+      <div class="cat-head">
+        <h3>${cat.name}</h3>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="cat-count" style="display:none;">0</span>
+          <span class="chev">▾</span>
+        </div>
+      </div>
+      <div class="cat-body"></div>`;
+    const body = catEl.querySelector('.cat-body');
+    cat.items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'item-row';
+      const sub = item.weight
+        ? `${item.unit} · ${item.weight.toFixed(2)} ${cat.weightLabel || 'แต้ม/ครั้ง'}`
+        : item.unit;
+      const detailLine = item.detail ? `<div class="item-detail">${item.detail}</div>` : '';
+      row.innerHTML = `
+        <div class="item-name">${item.label}<div class="item-unit">${sub}</div>${detailLine}</div>
+        <div class="stepper">
+          <button data-act="dec" data-id="${item.id}" aria-label="ลด">−</button>
+          <span class="val" data-val="${item.id}">0</span>
+          <button data-act="inc" data-id="${item.id}" aria-label="เพิ่ม">+</button>
+        </div>`;
+      body.appendChild(row);
+    });
+    catEl.querySelector('.cat-head').addEventListener('click', () => catEl.classList.toggle('open'));
+    wrap.appendChild(catEl);
+  });
+
+  if(cfg.hasDateSelect && dateSelect){
+    dateSelect.dataset.iso = todayStr();
+    dateSelect.value = formatDMY(todayStr());
+    dateSelect.addEventListener('click', () => openCalendarFor(dateSelect, updateReady));
+  }
+
+  if(cfg.hasShift && shiftSelect){
+    shiftSelect.addEventListener('change', () => {
+      selectedShift = shiftSelect.value || null;
+      updateReady();
+    });
+  }
+
+  wrap.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const id = btn.dataset.id;
+    const delta = btn.dataset.act === 'inc' ? 1 : -1;
+    counts[id] = Math.max(0, (counts[id]||0) + delta);
+    section.querySelector(`[data-val="${id}"]`).textContent = counts[id];
+    updateCatCounts();
+    syncZeroConfirmState();
+    updateReady();
+  });
+
+  function syncZeroConfirmState(){
+    if(!zeroConfirm) return;
+    const hasItems = Object.values(counts).some(v=>v>0);
+    zeroConfirm.disabled = hasItems;
+    if(hasItems) zeroConfirm.checked = false;
+  }
+  if(zeroConfirm){ zeroConfirm.addEventListener('change', updateReady); }
+
+  function updateCatCounts(){
+    section.querySelectorAll('.cat').forEach((catEl, ci) => {
+      const cat = cfg.categories[ci];
+      const n = cat.items.reduce((s,i)=> s + (counts[i.id]||0), 0);
+      const badge = catEl.querySelector('.cat-count');
+      if(n>0){ badge.style.display='inline-block'; badge.textContent = n; } else { badge.style.display='none'; }
+    });
+  }
+
+  function currentTotals(){
+    let weighted = 0, plain = 0;
+    Object.keys(counts).forEach(id => {
+      const it = allItems[id]; const n = counts[id]||0;
+      if(!n) return;
+      if(it.weight){ weighted += n*it.weight; } else { plain += n; }
+    });
+    return {weighted, plain};
+  }
+
+  function updateReady(){
+    if(!cfg.active) return;
+    const {weighted, plain} = currentTotals();
+    const total = cfg.totalMode === 'weighted' ? weighted : (weighted + plain);
+    const isZero = zeroConfirm && zeroConfirm.checked;
+    document.getElementById('totalDisplay').textContent = isZero ? '0' : (cfg.totalMode === 'weighted' ? total.toFixed(2) : total);
+    document.getElementById('totalLabel').textContent = isZero ? 'ยืนยันไม่มีเคสวันนี้' : cfg.totalLabel;
+    const hasItems = Object.values(counts).some(v=>v>0);
+    const hasLoc = !!locSelect.value;
+    const hasShift = !cfg.hasShift || !!selectedShift;
+    const hasDate = !cfg.hasDateSelect || (dateSelect && !!dateSelect.dataset.iso);
+    document.getElementById('submitBtn').disabled = !((hasItems || isZero) && hasLoc && hasShift && hasDate);
+  }
+  locSelect.addEventListener('change', updateReady);
+
+  function doSubmit(){
+    const loc = locSelect.value;
+    if(!loc) return;
+    if(cfg.hasShift && !selectedShift) return;
+    const entryDate = (cfg.hasDateSelect && dateSelect && dateSelect.dataset.iso) ? dateSelect.dataset.iso : todayStr();
+    const isZero = zeroConfirm && zeroConfirm.checked;
+    const items = isZero
+      ? [{ activityId:'_zero', label:'ยืนยันไม่มีเคส (0)', unit:'-', weight:0, count:1 }]
+      : Object.keys(counts).filter(id => counts[id]>0).map(id => ({
+          activityId:id, label:allItems[id].label, unit:allItems[id].unit,
+          weight: allItems[id].weight || 0, count: counts[id]
+        }));
+    if(items.length===0) return;
+    const {weighted, plain} = currentTotals();
+    const entry = {
+      entryId: uid(), app: cfg.appId, date: entryDate, location: loc,
+      shift: cfg.hasShift ? selectedShift : null,
+      timestamp: new Date().toISOString(), items,
+      totalWeighted: isZero ? 0 : weighted, totalPlain: isZero ? 0 : plain, synced:false
+    };
+    const q = loadQueue(); q.push(entry); saveQueue(q);
+    counts = {};
+    section.querySelectorAll('.val').forEach(el => el.textContent = '0');
+    updateCatCounts();
+    if(zeroConfirm){ zeroConfirm.checked = false; zeroConfirm.disabled = false; }
+    updateReady();
+    showToast('บันทึกแล้ว กำลังซิงก์ข้อมูล...');
+    attemptSync();
+    renderHistory();
+  }
+
+  function renderHistory(){
+    const q = loadQueue().filter(e => e.app === cfg.appId && !e.deleted && new Date(e.timestamp).toISOString().slice(0,10) === todayStr())
+      .sort((a,b)=> b.timestamp.localeCompare(a.timestamp));
+    if(q.length===0){
+      historyList.innerHTML = '<div class="empty">ยังไม่มีรายการที่บันทึกวันนี้จากเครื่องนี้</div>';
+      return;
+    }
+    historyList.innerHTML = '';
+    q.forEach(entry => {
+      const el = document.createElement('div');
+      el.className = 'hist-item';
+      const time = new Date(entry.timestamp).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'});
+      const shiftTxt = entry.shift ? ` · ${entry.shift}` : '';
+      const dateTxt = entry.date ? ` · ${formatDMY(entry.date)}` : '';
+      const isZeroEntry = entry.items.length === 1 && entry.items[0].activityId === '_zero';
+      const scoreTxt = isZeroEntry
+        ? 'ยืนยันไม่มีเคส (0)'
+        : (cfg.totalMode === 'weighted'
+          ? `${entry.items.length} กิจกรรม · รวม ${entry.totalWeighted.toFixed(2)} ${cfg.totalLabel}`
+          : `${entry.items.length} กิจกรรม · รวม ${entry.totalPlain + entry.totalWeighted} รายการ`);
+      el.innerHTML = `
+        <div class="hist-top"><div class="hist-loc">${entry.location}${shiftTxt}${dateTxt}</div><div class="hist-time">${time}</div></div>
+        <div class="hist-pts">${scoreTxt}</div>
+        ${entry.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}
+        <div class="hist-actions"><button class="del" data-del="${entry.entryId}">ลบรายการนี้</button></div>`;
+      historyList.appendChild(el);
+    });
+  }
+
+  historyList.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-del]');
+    if(!btn) return;
+    const id = btn.dataset.del;
+    const q = loadQueue();
+    const entry = q.find(x => x.entryId === id);
+    if(!entry) return;
+    if(entry.synced){ entry.deleted = true; entry.deleteSynced = false; }
+    else { q.splice(q.indexOf(entry),1); }
+    saveQueue(q);
+    renderHistory();
+    attemptSync();
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', () => { if(cfg.active) doSubmit(); });
+
+  section.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      section.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      const isForm = tab.dataset.tab === 'form';
+      section.querySelector('.view-form').style.display = isForm ? 'block' : 'none';
+      section.querySelector('.view-history').style.display = isForm ? 'none' : 'block';
+      document.getElementById('footerBar').classList.toggle('hidden', !isForm);
+      if(!isForm) renderHistory();
+    });
+  });
+
+  return { updateReady, renderHistory, section,
+    activate(){ cfg.active = true; updateReady(); section.querySelector('.view-form').style.display='block'; section.querySelector('.view-history').style.display='none';
+      section.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); section.querySelector('.tab[data-tab="form"]').classList.add('active');
+      document.getElementById('footerBar').classList.remove('hidden'); },
+    deactivate(){ cfg.active = false; }
+  };
+}
+
+const assistantModule = buildModule({
+  appId:'assistant', locations:ASSISTANT_LOCATIONS, categories:ASSISTANT_CATEGORIES,
+  hasShift:false, totalMode:'weighted', totalLabel:'คะแนนรวมของรายการนี้ (แต้ม)', active:false
+});
+const nurseModule = buildModule({
+  appId:'nurse', locations:NURSE_LOCATIONS, categories:NURSE_CATEGORIES,
+  hasShift:true, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนนภาระงาน (แต้ม)', active:false
+});
+
+/* =====================================================================
+   Navigation between Home / Assistant / Nurse
+===================================================================== */
+const HEADER_CONFIG = {
+  home:      {title:'P4P AnesMNST', accent:'var(--teal)', showBack:false},
+  assistant: {title:'P4P ผู้ช่วย',  accent:'var(--teal)', showBack:true},
+  nurse:     {title:'P4P Nurse',    accent:'var(--indigo)', showBack:true},
+};
+
+function goTo(screenId){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screenId).classList.add('active');
+  const conf = HEADER_CONFIG[screenId];
+  document.documentElement.style.setProperty('--hdr', conf.accent);
+  document.getElementById('headerTitle').textContent = conf.title;
+  document.getElementById('backBtn').style.display = conf.showBack ? 'flex' : 'none';
+  document.querySelector('meta[name="theme-color"]').setAttribute('content',
+    screenId === 'nurse' ? '#5B4FCF' : '#157FA6');
+
+  assistantModule.deactivate(); nurseModule.deactivate();
+  document.getElementById('footerBar').classList.add('hidden');
+
+  if(screenId === 'assistant'){
+    document.documentElement.style.setProperty('--focus','var(--teal)');
+    document.documentElement.style.setProperty('--btn','var(--teal)');
+    document.documentElement.style.setProperty('--tot-c','var(--teal-d)');
+    assistantModule.activate();
+  } else if(screenId === 'nurse'){
+    document.documentElement.style.setProperty('--focus','var(--indigo)');
+    document.documentElement.style.setProperty('--btn','var(--indigo)');
+    document.documentElement.style.setProperty('--tot-c','var(--indigo-d)');
+    nurseModule.activate();
+  }
+}
+document.querySelectorAll('[data-goto]').forEach(el => {
+  el.addEventListener('click', () => goTo(el.dataset.goto));
+});
+document.getElementById('backBtn').addEventListener('click', () => goTo('home'));
+
+/* =====================================================================
+   Sync to Google Apps Script backend
+===================================================================== */
+async function attemptSync(){
+  const url = getWebAppUrl();
+  const q = loadQueue();
+  const pending = q.filter(e => !e.synced && !e.deleted);
+  const pendingDeletes = q.filter(e => e.deleted && !e.deleteSynced);
+  setSyncStatus();
+  if(!url || !navigator.onLine) return;
+  for(const entry of pending){
+    try{ await postToServer({ action:'create', ...entry }); entry.synced = true; }catch(err){}
+  }
+  for(const entry of pendingDeletes){
+    try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); entry.deleteSynced = true; }catch(err){}
+  }
+  const cleaned = q.filter(e => !(e.deleted && e.deleteSynced));
+  saveQueue(cleaned);
+  setSyncStatus();
+}
+function postToServer(payload){
+  const url = getWebAppUrl();
+  // ใช้ mode 'no-cors' เพราะ Apps Script Web App ตอบกลับผ่าน redirect
+  // ที่เบราว์เซอร์บางเครื่องอ่านผลลัพธ์ไม่ได้ (ทั้งที่บันทึกสำเร็จจริงฝั่งเซิร์ฟเวอร์)
+  // ภายใต้ no-cors จะอ่านสถานะ (ok/status) ไม่ได้ แต่ถ้าไม่มี error ระดับเครือข่ายเกิดขึ้น
+  // ถือว่าคำขอถูกส่งออกไปสำเร็จ
+  return fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+}
+function setSyncStatus(){
+  const url = getWebAppUrl();
+  const q = loadQueue();
+  const pendingCount = q.filter(e => (!e.synced && !e.deleted) || (e.deleted && !e.deleteSynced)).length;
+  const dot = document.getElementById('syncDot'); const txt = document.getElementById('syncText');
+  dot.classList.remove('off');
+  if(!url){ dot.classList.add('off'); txt.textContent = 'ยังไม่ได้ตั้งค่าซิงก์ (แตะ ⚙)'; }
+  else if(!navigator.onLine){ dot.classList.add('off'); txt.textContent = `ออฟไลน์ · ค้างส่ง ${pendingCount} รายการ`; }
+  else if(pendingCount>0){ txt.textContent = `กำลังซิงก์ ${pendingCount} รายการ...`; }
+  else{ txt.textContent = 'ซิงก์ข้อมูลล่าสุดแล้ว'; }
+}
+window.addEventListener('online', attemptSync);
+setInterval(attemptSync, 20000);
+
+/* ---------- settings modal ---------- */
+const settingsModal = document.getElementById('settingsModal');
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  document.getElementById('webAppUrlInput').value = getWebAppUrl();
+  settingsModal.classList.add('show');
+});
+document.getElementById('settingsCancel').addEventListener('click', () => settingsModal.classList.remove('show'));
+document.getElementById('settingsSave').addEventListener('click', () => {
+  setWebAppUrl(document.getElementById('webAppUrlInput').value.trim());
+  settingsModal.classList.remove('show');
+  showToast('บันทึกการตั้งค่าแล้ว');
+  attemptSync();
+});
+
+/* ---------- toast ---------- */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
+}
+
+/* ---------- service worker ---------- */
+try{
+  if('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+  }
+}catch(e){}
+
+/* ---------- init ---------- */
+try{ goTo('home'); }catch(e){}
+try{ setSyncStatus(); }catch(e){}
+try{ attemptSync(); }catch(e){}
+try{ if(!storageOK) showToast('เปิดในโหมดพรีวิว: ข้อมูลจะไม่ถูกจำไว้ถาวร กรุณาดาวน์โหลดไฟล์ไปเปิดจริงบนมือถือ'); }catch(e){}
+</script>
+</body>
+</html>
