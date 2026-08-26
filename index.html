@@ -342,6 +342,14 @@ const NURSE_CATEGORIES = [
     {id:"nb",  label:"ดูแลทารกแรกเกิดในห้องคลอด/ห้องผ่าตัด", unit:"ราย", weight:25, detail:"20 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
     {id:"rr",  label:"การพยาบาลผู้ป่วยใน Recovery room", unit:"ราย", weight:96,  detail:"24 นาที × น้ำหนัก 2 × บุคลากร 2"},
   ]},
+  {name:"ASA Class ผู้ป่วยที่ดูแล (รวมรับ-ส่งเวร)", weightLabel:"ค่าคงที่ Productivity", productivity:true, items:[
+    {id:"asa1",label:"ASA 1",unit:"ราย",weight:3.52,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa2",label:"ASA 2",unit:"ราย",weight:5.33,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa3",label:"ASA 3",unit:"ราย",weight:6.64,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa4",label:"ASA 4",unit:"ราย",weight:7.12,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa5",label:"ASA 5",unit:"ราย",weight:7.53,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa6",label:"ASA 6",unit:"ราย",weight:7.53,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+  ]},
 ];
 
 /* =====================================================================
@@ -421,7 +429,7 @@ function buildModule(cfg){
   let selectedShift = null;
 
   const allItems = {};
-  cfg.categories.forEach(c => c.items.forEach(i => allItems[i.id] = i));
+  cfg.categories.forEach(c => c.items.forEach(i => allItems[i.id] = { ...i, _productivity: !!c.productivity && c.weightLabel === 'ค่าคงที่ Productivity' }));
 
   cfg.locations.forEach(loc => {
     const o = document.createElement('option');
@@ -505,22 +513,39 @@ function buildModule(cfg){
   }
 
   function currentTotals(){
-    let weighted = 0, plain = 0;
+    let weighted = 0, asaWeighted = 0, plain = 0;
     Object.keys(counts).forEach(id => {
       const it = allItems[id]; const n = counts[id]||0;
       if(!n) return;
-      if(it.weight){ weighted += n*it.weight; } else { plain += n; }
+      if(it._productivity){ asaWeighted += n*it.weight; }
+      else if(it.weight){ weighted += n*it.weight; }
+      else { plain += n; }
     });
-    return {weighted, plain};
+    return {weighted, asaWeighted, plain};
   }
 
   function updateReady(){
     if(!cfg.active) return;
-    const {weighted, plain} = currentTotals();
-    const total = cfg.totalMode === 'weighted' ? weighted : (weighted + plain);
+    const {weighted, asaWeighted, plain} = currentTotals();
     const isZero = zeroConfirm && zeroConfirm.checked;
-    document.getElementById('totalDisplay').textContent = isZero ? '0' : (cfg.totalMode === 'weighted' ? total.toFixed(2) : total);
-    document.getElementById('totalLabel').textContent = isZero ? 'ยืนยันไม่มีเคสวันนี้' : cfg.totalLabel;
+    const hasP4P = weighted > 0 || plain > 0;
+    const hasAsa = asaWeighted > 0;
+    let displayVal, displayLabel;
+    if(isZero){
+      displayVal = '0'; displayLabel = 'ยืนยันไม่มีเคสวันนี้';
+    } else if(hasP4P && hasAsa){
+      displayVal = (weighted + plain).toFixed(2);
+      displayLabel = `${cfg.totalLabel} · ASA Productivity แยกคำนวณ ${asaWeighted.toFixed(2)}`;
+    } else if(hasAsa){
+      displayVal = asaWeighted.toFixed(2);
+      displayLabel = 'คะแนน ASA Productivity (คนละตัวชี้วัดกับ P4P)';
+    } else {
+      const total = cfg.totalMode === 'weighted' ? weighted : (weighted + plain);
+      displayVal = cfg.totalMode === 'weighted' ? total.toFixed(2) : total;
+      displayLabel = cfg.totalLabel;
+    }
+    document.getElementById('totalDisplay').textContent = displayVal;
+    document.getElementById('totalLabel').textContent = displayLabel;
     const hasItems = Object.values(counts).some(v=>v>0);
     const hasLoc = !!locSelect.value;
     const hasShift = !cfg.hasShift || !!selectedShift;
@@ -542,12 +567,12 @@ function buildModule(cfg){
           weight: allItems[id].weight || 0, count: counts[id]
         }));
     if(items.length===0) return;
-    const {weighted, plain} = currentTotals();
+    const {weighted, asaWeighted, plain} = currentTotals();
     const entry = {
       entryId: uid(), app: cfg.appId, date: entryDate, location: loc,
       shift: cfg.hasShift ? selectedShift : null,
       timestamp: new Date().toISOString(), items,
-      totalWeighted: isZero ? 0 : weighted, totalPlain: isZero ? 0 : plain, synced:false
+      totalWeighted: isZero ? 0 : weighted, totalAsa: isZero ? 0 : asaWeighted, totalPlain: isZero ? 0 : plain, synced:false
     };
     const q = loadQueue(); q.push(entry); saveQueue(q);
     counts = {};
@@ -575,11 +600,20 @@ function buildModule(cfg){
       const shiftTxt = entry.shift ? ` · ${entry.shift}` : '';
       const dateTxt = entry.date ? ` · ${formatDMY(entry.date)}` : '';
       const isZeroEntry = entry.items.length === 1 && entry.items[0].activityId === '_zero';
-      const scoreTxt = isZeroEntry
-        ? 'ยืนยันไม่มีเคส (0)'
-        : (cfg.totalMode === 'weighted'
+      const hasAsaPart = (entry.totalAsa || 0) > 0;
+      const hasP4pPart = (entry.totalWeighted || 0) > 0 || (entry.totalPlain || 0) > 0;
+      let scoreTxt;
+      if(isZeroEntry){
+        scoreTxt = 'ยืนยันไม่มีเคส (0)';
+      } else if(hasAsaPart && hasP4pPart){
+        scoreTxt = `${entry.items.length} กิจกรรม · P4P ${entry.totalWeighted.toFixed(2)} แต้ม · ASA Productivity ${entry.totalAsa.toFixed(2)}`;
+      } else if(hasAsaPart){
+        scoreTxt = `${entry.items.length} กิจกรรม · ASA Productivity ${entry.totalAsa.toFixed(2)}`;
+      } else {
+        scoreTxt = cfg.totalMode === 'weighted'
           ? `${entry.items.length} กิจกรรม · รวม ${entry.totalWeighted.toFixed(2)} ${cfg.totalLabel}`
-          : `${entry.items.length} กิจกรรม · รวม ${entry.totalPlain + entry.totalWeighted} รายการ`);
+          : `${entry.items.length} กิจกรรม · รวม ${entry.totalPlain + entry.totalWeighted} รายการ`;
+      }
       el.innerHTML = `
         <div class="hist-top"><div class="hist-loc">${entry.location}${shiftTxt}${dateTxt}</div><div class="hist-time">${time}</div></div>
         <div class="hist-pts">${scoreTxt}</div>
@@ -695,8 +729,16 @@ async function attemptSync(){
 }
 function postToServer(payload){
   const url = getWebAppUrl();
-  return fetch(url, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) })
-    .then(r => { if(!r.ok) throw new Error('sync failed'); });
+  // ใช้ mode 'no-cors' เพราะ Apps Script Web App ตอบกลับผ่าน redirect
+  // ที่เบราว์เซอร์บางเครื่องอ่านผลลัพธ์ไม่ได้ (ทั้งที่บันทึกสำเร็จจริงฝั่งเซิร์ฟเวอร์)
+  // ภายใต้ no-cors จะอ่านสถานะ (ok/status) ไม่ได้ แต่ถ้าไม่มี error ระดับเครือข่ายเกิดขึ้น
+  // ถือว่าคำขอถูกส่งออกไปสำเร็จ
+  return fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
 }
 function setSyncStatus(){
   const url = getWebAppUrl();
