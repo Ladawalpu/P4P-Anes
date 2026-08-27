@@ -188,6 +188,15 @@
       <div class="tab" data-tab="history">ประวัติวันนี้</div>
     </div>
     <div class="view-form">
+      <div class="card staffing-entry-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-weight:600;font-size:14px;">อัตรากำลังประจำวัน</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">สำหรับผู้รับผิดชอบ ใช้คำนวณ Productivity สิ้นเดือน</div>
+          </div>
+          <button class="staffing-open-btn" style="background:var(--indigo-l);color:var(--indigo-d);border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap;">บันทึก</button>
+        </div>
+      </div>
       <div class="card">
         <label class="field-label">วันที่ปฏิบัติงาน</label>
         <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
@@ -235,6 +244,29 @@
     <div class="cal-grid" id="calGrid"></div>
     <div class="modal-row">
       <button class="btn-secondary" id="calCancel">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="staffingModal">
+  <div class="modal">
+    <h3>บันทึกอัตรากำลังประจำวัน</h3>
+    <label class="field-label">วันที่</label>
+    <input type="text" id="staffingDateInput" readonly placeholder="เลือกวันที่" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;margin-bottom:12px;">
+    <label class="field-label">เวร</label>
+    <select id="staffingShiftInput" style="margin-bottom:12px;">
+      <option value="">-- เลือกเวร --</option>
+      <option value="เช้าในเวลา">เช้าในเวลา</option>
+      <option value="เช้านอกเวลา">เช้านอกเวลา</option>
+      <option value="บ่าย">บ่าย</option>
+      <option value="ดึก">ดึก</option>
+    </select>
+    <label class="field-label">จำนวนอัตรากำลัง (คน)</label>
+    <input type="number" id="staffingCountInput" min="1" step="1" placeholder="เช่น 3">
+    <div class="hint">บันทึก 1 ครั้งต่อ 1 เวรต่อวัน หากบันทึกซ้ำวันเดิม/เวรเดิม ระบบจะแก้ไขตัวเลขให้แทนค่าเดิม ไม่นับซ้อน</div>
+    <div class="modal-row">
+      <button class="btn-secondary" id="staffingCancel">ปิด</button>
+      <button class="btn-primary" id="staffingSave" style="background:var(--indigo);">บันทึก</button>
     </div>
   </div>
 </div>
@@ -718,7 +750,14 @@ async function attemptSync(){
   setSyncStatus();
   if(!url || !navigator.onLine) return;
   for(const entry of pending){
-    try{ await postToServer({ action:'create', ...entry }); entry.synced = true; }catch(err){}
+    try{
+      if(entry.type === 'staffing'){
+        await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount });
+      } else {
+        await postToServer({ action:'create', ...entry });
+      }
+      entry.synced = true;
+    }catch(err){}
   }
   for(const entry of pendingDeletes){
     try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); entry.deleteSynced = true; }catch(err){}
@@ -753,6 +792,45 @@ function setSyncStatus(){
 }
 window.addEventListener('online', attemptSync);
 setInterval(attemptSync, 20000);
+
+/* ---------- staffing entry modal (Nurse only) ---------- */
+const staffingModal = document.getElementById('staffingModal');
+const staffingDateInput = document.getElementById('staffingDateInput');
+const staffingShiftInput = document.getElementById('staffingShiftInput');
+const staffingCountInput = document.getElementById('staffingCountInput');
+
+document.querySelectorAll('.staffing-open-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(!staffingDateInput.dataset.iso){
+      staffingDateInput.dataset.iso = todayStr();
+      staffingDateInput.value = formatDMY(todayStr());
+    }
+    staffingModal.classList.add('show');
+  });
+});
+staffingDateInput.addEventListener('click', () => openCalendarFor(staffingDateInput, () => {}));
+document.getElementById('staffingCancel').addEventListener('click', () => staffingModal.classList.remove('show'));
+document.getElementById('staffingSave').addEventListener('click', () => {
+  const date = staffingDateInput.dataset.iso;
+  const shift = staffingShiftInput.value;
+  const count = parseInt(staffingCountInput.value, 10);
+  if(!date || !shift || !(count > 0)){
+    showToast('กรุณากรอกวันที่ เวร และจำนวนอัตรากำลังให้ครบ');
+    return;
+  }
+  const q = loadQueue();
+  q.push({
+    entryId: uid(), app: 'nurse', type: 'staffing',
+    date, shift, staffCount: count,
+    timestamp: new Date().toISOString(), synced: false
+  });
+  saveQueue(q);
+  staffingModal.classList.remove('show');
+  staffingShiftInput.value = '';
+  staffingCountInput.value = '';
+  showToast('บันทึกอัตรากำลังแล้ว กำลังซิงก์...');
+  attemptSync();
+});
 
 /* ---------- settings modal ---------- */
 const settingsModal = document.getElementById('settingsModal');
