@@ -361,7 +361,7 @@ const ASSISTANT_CATEGORIES = [
 const NURSE_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","501","502","503","504","505","506","507","508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
 
 const NURSE_CATEGORIES = [
-  {name:"กิจกรรมหลัก P4P วิสัญญีพยาบาล", weightLabel:"แต้ม/ราย", productivity:true, items:[
+  {name:"กิจกรรมหลัก P4P วิสัญญีพยาบาล", weightLabel:"แต้ม/ราย", productivity:true, mainCategory:true, items:[
     {id:"pv",  label:"การพยาบาลก่อนผ่าตัด (Pre visit)", unit:"ราย", weight:37.5,  detail:"30 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
     {id:"ga",  label:"GA", unit:"ราย", weight:600,   detail:"150 นาที × น้ำหนัก 2 × บุคลากร 2"},
     {id:"ra",  label:"RA", unit:"ราย", weight:225,   detail:"90 นาที × น้ำหนัก 1.25 × บุคลากร 2"},
@@ -511,8 +511,36 @@ function buildModule(cfg){
   if(cfg.hasShift && shiftSelect){
     shiftSelect.addEventListener('change', () => {
       selectedShift = shiftSelect.value || null;
+      updateShiftVisibility();
       updateReady();
     });
+  }
+
+  function shiftNeedsLocation(){
+    return !cfg.hasShift || !selectedShift || selectedShift === 'เช้าในเวลา';
+  }
+
+  function updateShiftVisibility(){
+    if(!cfg.hasShift) return;
+    const showFull = shiftNeedsLocation();
+    const locCard = locSelect.closest('.card');
+    if(locCard) locCard.style.display = showFull ? '' : 'none';
+    section.querySelectorAll('.cat').forEach((catEl, ci) => {
+      const cat = cfg.categories[ci];
+      if(!cat || !cat.mainCategory) return;
+      catEl.style.display = showFull ? '' : 'none';
+      if(!showFull){
+        // เคลียร์จำนวนที่นับไว้ในหมวดนี้ (ไม่ใช้กับเวรนี้) กันข้อมูลค้าง
+        cat.items.forEach(it => {
+          if(counts[it.id]){
+            counts[it.id] = 0;
+            const el = section.querySelector(`[data-val="${it.id}"]`);
+            if(el) el.textContent = '0';
+          }
+        });
+      }
+    });
+    updateCatCounts();
   }
 
   wrap.addEventListener('click', (e) => {
@@ -579,7 +607,7 @@ function buildModule(cfg){
     document.getElementById('totalDisplay').textContent = displayVal;
     document.getElementById('totalLabel').textContent = displayLabel;
     const hasItems = Object.values(counts).some(v=>v>0);
-    const hasLoc = !!locSelect.value;
+    const hasLoc = shiftNeedsLocation() ? !!locSelect.value : true;
     const hasShift = !cfg.hasShift || !!selectedShift;
     const hasDate = !cfg.hasDateSelect || (dateSelect && !!dateSelect.dataset.iso);
     document.getElementById('submitBtn').disabled = !((hasItems || isZero) && hasLoc && hasShift && hasDate);
@@ -587,9 +615,10 @@ function buildModule(cfg){
   locSelect.addEventListener('change', updateReady);
 
   function doSubmit(){
-    const loc = locSelect.value;
-    if(!loc) return;
     if(cfg.hasShift && !selectedShift) return;
+    const needsLoc = shiftNeedsLocation();
+    const loc = needsLoc ? locSelect.value : (locSelect.value || 'ทั้งเวร (ไม่ระบุจุด)');
+    if(needsLoc && !loc) return;
     const entryDate = (cfg.hasDateSelect && dateSelect && dateSelect.dataset.iso) ? dateSelect.dataset.iso : todayStr();
     const isZero = zeroConfirm && zeroConfirm.checked;
     const items = isZero
@@ -684,7 +713,7 @@ function buildModule(cfg){
   });
 
   return { updateReady, renderHistory, section,
-    activate(){ cfg.active = true; updateReady(); section.querySelector('.view-form').style.display='block'; section.querySelector('.view-history').style.display='none';
+    activate(){ cfg.active = true; updateShiftVisibility(); updateReady(); section.querySelector('.view-form').style.display='block'; section.querySelector('.view-history').style.display='none';
       section.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); section.querySelector('.tab[data-tab="form"]').classList.add('active');
       document.getElementById('footerBar').classList.remove('hidden'); },
     deactivate(){ cfg.active = false; }
