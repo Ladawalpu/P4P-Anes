@@ -167,6 +167,10 @@
     </div>
     <div class="view-form">
       <div class="card">
+        <label class="field-label">วันที่ปฏิบัติงาน</label>
+        <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
+      </div>
+      <div class="card">
         <label class="field-label">จุดปฏิบัติงานวันนี้</label>
         <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
       </div>
@@ -722,7 +726,7 @@ function buildModule(cfg){
 
 const assistantModule = buildModule({
   appId:'assistant', locations:ASSISTANT_LOCATIONS, categories:ASSISTANT_CATEGORIES,
-  hasShift:false, totalMode:'weighted', totalLabel:'คะแนนรวมของรายการนี้ (แต้ม)', active:false
+  hasShift:false, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนนรวมของรายการนี้ (แต้ม)', active:false
 });
 const nurseModule = buildModule({
   appId:'nurse', locations:NURSE_LOCATIONS, categories:NURSE_CATEGORIES,
