@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>P4P AnesMNST</title>
+<title>P4P Anes</title>
 <meta name="theme-color" content="#157FA6">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -136,7 +136,7 @@
   <div class="header-row">
     <div class="header-left">
       <button class="icon-btn" id="backBtn" style="display:none;" aria-label="กลับ">←</button>
-      <h1 id="headerTitle">P4P AnesMNST</h1>
+      <h1 id="headerTitle">P4P Anes</h1>
     </div>
     <button class="icon-btn" id="settingsBtn" aria-label="ตั้งค่า">⚙</button>
   </div>
@@ -295,7 +295,7 @@
    ข้อมูลอ้างอิง: จุดปฏิบัติงาน / หมวดกิจกรรม / ค่าคงที่
 ===================================================================== */
 
-const ASSISTANT_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","RRช6","501","502","503","504","505","506","507","Endo1","Endo2","Endo3","RRช5","สูติ1","สูติ2","สูติ3","RRสูติ","PAC","Supply","คลัง","ธุรการ"];
+const ASSISTANT_LOCATIONS = ["CVT1","CVT2","OR 602","OR 603","OR 604","OR 605","OR 606","OR 607","OR 608","OR 609","Remote","RRช6","OR 501","OR 502","OR 503","OR 504","OR 505","OR 506","OR 507","Endo1","Endo2","Endo3","RRช5","สูติ1","สูติ2","สูติ3","RRสูติ","PAC","Supply","คลัง","ธุรการ"];
 
 const ASSISTANT_CATEGORIES = [
   {name:"งานทั่วไป", items:[
@@ -362,7 +362,7 @@ const ASSISTANT_CATEGORIES = [
   ]},
 ];
 
-const NURSE_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","501","502","503","504","505","506","507","508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
+const NURSE_LOCATIONS = ["CVT1","CVT2","OR 602","OR 603","OR 604","OR 605","OR 606","OR 607","OR 608","OR 609","Remote","OR 501","OR 502","OR 503","OR 504","OR 505","OR 506","OR 507","OR 508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
 
 const NURSE_CATEGORIES = [
   {name:"กิจกรรมหลัก P4P วิสัญญีพยาบาล", weightLabel:"แต้ม/ราย", productivity:true, mainCategory:true, items:[
@@ -737,7 +737,7 @@ const nurseModule = buildModule({
    Navigation between Home / Assistant / Nurse
 ===================================================================== */
 const HEADER_CONFIG = {
-  home:      {title:'P4P AnesMNST', accent:'var(--teal)', showBack:false},
+  home:      {title:'P4P Anes', accent:'var(--teal)', showBack:false},
   assistant: {title:'P4P ผู้ช่วย',  accent:'var(--teal)', showBack:true},
   nurse:     {title:'P4P Nurse',    accent:'var(--indigo)', showBack:true},
 };
