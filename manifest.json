@@ -1,6 +1,6 @@
 {
-  "name": "P4P AnesMNST",
-  "short_name": "P4P AnesMNST",
+  "name": "P4P Anes",
+  "short_name": "P4P",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f7f7f5",
