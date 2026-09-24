@@ -111,9 +111,6 @@
   .hist-time{font-size:12px;color:var(--text-3);}
   .hist-pts{font-size:13px;color:var(--tot-c,var(--teal-d));margin-top:3px;}
   .hist-pending{font-size:11px;color:var(--amber);background:var(--amber-l);padding:2px 8px;border-radius:20px;display:inline-block;margin-top:6px;}
-  .hist-actions{display:flex;gap:8px;margin-top:10px;}
-  .hist-actions button{font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--text-2);}
-  .hist-actions .del{color:var(--red);border-color:#f0c0c0;}
   .empty{text-align:center;color:var(--text-3);padding:40px 20px;font-size:13px;}
 
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:50;}
@@ -682,25 +679,10 @@ function buildModule(cfg){
       el.innerHTML = `
         <div class="hist-top"><div class="hist-loc">${entry.location}${shiftTxt}${dateTxt}</div><div class="hist-time">${time}</div></div>
         <div class="hist-pts">${scoreTxt}</div>
-        ${entry.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}
-        <div class="hist-actions"><button class="del" data-del="${entry.entryId}">ลบรายการนี้</button></div>`;
+        ${entry.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}`;
       historyList.appendChild(el);
     });
   }
-
-  historyList.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-del]');
-    if(!btn) return;
-    const id = btn.dataset.del;
-    const q = loadQueue();
-    const entry = q.find(x => x.entryId === id);
-    if(!entry) return;
-    if(entry.synced){ entry.deleted = true; entry.deleteSynced = false; }
-    else { q.splice(q.indexOf(entry),1); }
-    saveQueue(q);
-    renderHistory();
-    attemptSync();
-  });
 
   document.getElementById('submitBtn').addEventListener('click', () => { if(cfg.active) doSubmit(); });
 
@@ -813,6 +795,10 @@ async function attemptSync(){
     const cleaned = latest.filter(e => !(e.deleted && e.deleteSynced));
     saveQueue(cleaned);
     setSyncStatus();
+    // สั่งวาดหน้า "ประวัติวันนี้" ใหม่ทันที กันป้าย "รอซิงก์" ค้างอยู่บนจอทั้งที่ซิงก์เสร็จไปแล้วจริง
+    // (ปลอดภัยเรียกทั้งสองโมดูลแม้จะไม่ได้เปิดแท็บประวัติอยู่ตอนนั้น เพราะแค่วาด DOM ที่มีอยู่แล้วใหม่)
+    try{ assistantModule.renderHistory(); }catch(e){}
+    try{ nurseModule.renderHistory(); }catch(e){}
   } finally {
     syncInProgress = false;
   }
