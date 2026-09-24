@@ -775,29 +775,47 @@ document.getElementById('backBtn').addEventListener('click', () => goTo('home'))
 /* =====================================================================
    Sync to Google Apps Script backend
 ===================================================================== */
+let syncInProgress = false; // กันไม่ให้ attemptSync ทำงานซ้อนกันหลายรอบพร้อมกัน (ต้นเหตุของบั๊กสถานะซิงก์สลับไปมา)
 async function attemptSync(){
-  const url = getWebAppUrl();
-  const q = loadQueue();
-  const pending = q.filter(e => !e.synced && !e.deleted);
-  const pendingDeletes = q.filter(e => e.deleted && !e.deleteSynced);
-  setSyncStatus();
-  if(!url || !navigator.onLine) return;
-  for(const entry of pending){
-    try{
-      if(entry.type === 'staffing'){
-        await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount });
-      } else {
-        await postToServer({ action:'create', ...entry });
-      }
-      entry.synced = true;
-    }catch(err){}
+  if(syncInProgress) return; // มีอีกรอบกำลังทำงานอยู่แล้ว ไม่ต้องเริ่มซ้อน
+  syncInProgress = true;
+  try{
+    const url = getWebAppUrl();
+    const snapshot = loadQueue();
+    const pending = snapshot.filter(e => !e.synced && !e.deleted);
+    const pendingDeletes = snapshot.filter(e => e.deleted && !e.deleteSynced);
+    setSyncStatus();
+    if(!url || !navigator.onLine) return;
+
+    const syncedIds = [];
+    const deleteSyncedIds = [];
+    for(const entry of pending){
+      try{
+        if(entry.type === 'staffing'){
+          await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount });
+        } else {
+          await postToServer({ action:'create', ...entry });
+        }
+        syncedIds.push(entry.entryId);
+      }catch(err){}
+    }
+    for(const entry of pendingDeletes){
+      try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); deleteSyncedIds.push(entry.entryId); }catch(err){}
+    }
+
+    // อ่านคิวล่าสุดอีกครั้งตอนจะบันทึกผล (ไม่ใช้ snapshot เดิมที่อาจเก่าไปแล้วระหว่างรอผลจากเซิร์ฟเวอร์)
+    // กันไม่ให้ไปเขียนทับรายการใหม่ที่เพิ่งถูกเพิ่มระหว่างนั้น หรือทำให้สถานะซิงก์ที่เพิ่งอัปเดตหายกลับไปเป็นเดิม
+    const latest = loadQueue();
+    latest.forEach(e => {
+      if(syncedIds.indexOf(e.entryId) !== -1) e.synced = true;
+      if(deleteSyncedIds.indexOf(e.entryId) !== -1) e.deleteSynced = true;
+    });
+    const cleaned = latest.filter(e => !(e.deleted && e.deleteSynced));
+    saveQueue(cleaned);
+    setSyncStatus();
+  } finally {
+    syncInProgress = false;
   }
-  for(const entry of pendingDeletes){
-    try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); entry.deleteSynced = true; }catch(err){}
-  }
-  const cleaned = q.filter(e => !(e.deleted && e.deleteSynced));
-  saveQueue(cleaned);
-  setSyncStatus();
 }
 function postToServer(payload){
   const url = getWebAppUrl();
