@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>P4P AnesMNST</title>
+<title>P4P Anes</title>
 <meta name="theme-color" content="#157FA6">
 <link rel="manifest" href="manifest.json">
 <style>
@@ -111,9 +111,6 @@
   .hist-time{font-size:12px;color:var(--text-3);}
   .hist-pts{font-size:13px;color:var(--tot-c,var(--teal-d));margin-top:3px;}
   .hist-pending{font-size:11px;color:var(--amber);background:var(--amber-l);padding:2px 8px;border-radius:20px;display:inline-block;margin-top:6px;}
-  .hist-actions{display:flex;gap:8px;margin-top:10px;}
-  .hist-actions button{font-size:12px;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--text-2);}
-  .hist-actions .del{color:var(--red);border-color:#f0c0c0;}
   .empty{text-align:center;color:var(--text-3);padding:40px 20px;font-size:13px;}
 
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:50;}
@@ -136,7 +133,7 @@
   <div class="header-row">
     <div class="header-left">
       <button class="icon-btn" id="backBtn" style="display:none;" aria-label="กลับ">←</button>
-      <h1 id="headerTitle">P4P AnesMNST</h1>
+      <h1 id="headerTitle">P4P Anes</h1>
     </div>
     <button class="icon-btn" id="settingsBtn" aria-label="ตั้งค่า">⚙</button>
   </div>
@@ -167,6 +164,10 @@
     </div>
     <div class="view-form">
       <div class="card">
+        <label class="field-label">วันที่ปฏิบัติงาน</label>
+        <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
+      </div>
+      <div class="card">
         <label class="field-label">จุดปฏิบัติงานวันนี้</label>
         <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
       </div>
@@ -188,6 +189,15 @@
       <div class="tab" data-tab="history">ประวัติวันนี้</div>
     </div>
     <div class="view-form">
+      <div class="card staffing-entry-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-weight:600;font-size:14px;">อัตรากำลังประจำวัน</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">สำหรับผู้รับผิดชอบ ใช้คำนวณ Productivity สิ้นเดือน</div>
+          </div>
+          <button class="staffing-open-btn" style="background:var(--indigo-l);color:var(--indigo-d);border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap;">บันทึก</button>
+        </div>
+      </div>
       <div class="card">
         <label class="field-label">วันที่ปฏิบัติงาน</label>
         <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
@@ -239,6 +249,29 @@
   </div>
 </div>
 
+<div class="modal-bg" id="staffingModal">
+  <div class="modal">
+    <h3>บันทึกอัตรากำลังประจำวัน</h3>
+    <label class="field-label">วันที่</label>
+    <input type="text" id="staffingDateInput" readonly placeholder="เลือกวันที่" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;margin-bottom:12px;">
+    <label class="field-label">เวร</label>
+    <select id="staffingShiftInput" style="margin-bottom:12px;">
+      <option value="">-- เลือกเวร --</option>
+      <option value="เช้าในเวลา">เช้าในเวลา</option>
+      <option value="เช้านอกเวลา">เช้านอกเวลา</option>
+      <option value="บ่าย">บ่าย</option>
+      <option value="ดึก">ดึก</option>
+    </select>
+    <label class="field-label">จำนวนอัตรากำลัง (คน)</label>
+    <input type="number" id="staffingCountInput" min="0.5" step="0.5" placeholder="เช่น 3 หรือ 3.5">
+    <div class="hint">บันทึก 1 ครั้งต่อ 1 เวรต่อวัน หากบันทึกซ้ำวันเดิม/เวรเดิม ระบบจะแก้ไขตัวเลขให้แทนค่าเดิม ไม่นับซ้อน</div>
+    <div class="modal-row">
+      <button class="btn-secondary" id="staffingCancel">ปิด</button>
+      <button class="btn-primary" id="staffingSave" style="background:var(--indigo);">บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="settingsModal">
   <div class="modal">
     <h3>ตั้งค่าการซิงก์ข้อมูล</h3>
@@ -259,7 +292,7 @@
    ข้อมูลอ้างอิง: จุดปฏิบัติงาน / หมวดกิจกรรม / ค่าคงที่
 ===================================================================== */
 
-const ASSISTANT_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","RRช6","501","502","503","504","505","506","507","Endo1","Endo2","Endo3","RRช5","สูติ1","สูติ2","สูติ3","RRสูติ","PAC","Supply","คลัง","ธุรการ"];
+const ASSISTANT_LOCATIONS = ["CVT1","CVT2","OR 602","OR 603","OR 604","OR 605","OR 606","OR 607","OR 608","OR 609","Remote","RRช6","OR 501","OR 502","OR 503","OR 504","OR 505","OR 506","OR 507","Endo1","Endo2","Endo3","RRช5","สูติ1","สูติ2","สูติ3","RRสูติ","PAC","Supply","คลัง","ธุรการ"];
 
 const ASSISTANT_CATEGORIES = [
   {name:"งานทั่วไป", items:[
@@ -326,10 +359,10 @@ const ASSISTANT_CATEGORIES = [
   ]},
 ];
 
-const NURSE_LOCATIONS = ["CVT1","CVT2","602","603","604","605","606","607","608","609","Remote","501","502","503","504","505","506","507","508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
+const NURSE_LOCATIONS = ["CVT1","CVT2","OR 602","OR 603","OR 604","OR 605","OR 606","OR 607","OR 608","OR 609","Remote","OR 501","OR 502","OR 503","OR 504","OR 505","OR 506","OR 507","OR 508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
 
 const NURSE_CATEGORIES = [
-  {name:"กิจกรรมหลัก P4P วิสัญญีพยาบาล", weightLabel:"แต้ม/ราย", productivity:true, items:[
+  {name:"กิจกรรมหลัก P4P วิสัญญีพยาบาล", weightLabel:"แต้ม/ราย", productivity:true, mainCategory:true, items:[
     {id:"pv",  label:"การพยาบาลก่อนผ่าตัด (Pre visit)", unit:"ราย", weight:37.5,  detail:"30 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
     {id:"ga",  label:"GA", unit:"ราย", weight:600,   detail:"150 นาที × น้ำหนัก 2 × บุคลากร 2"},
     {id:"ra",  label:"RA", unit:"ราย", weight:225,   detail:"90 นาที × น้ำหนัก 1.25 × บุคลากร 2"},
@@ -341,6 +374,14 @@ const NURSE_CATEGORIES = [
     {id:"o2",  label:"ผู้ป่วยวิกฤตขณะเคลื่อนย้ายระหว่างหน่วยงาน (O2, Transfer)", unit:"ราย", weight:20, detail:"20 นาที × น้ำหนัก 1 × บุคลากร 1"},
     {id:"nb",  label:"ดูแลทารกแรกเกิดในห้องคลอด/ห้องผ่าตัด", unit:"ราย", weight:25, detail:"20 นาที × น้ำหนัก 1.25 × บุคลากร 1"},
     {id:"rr",  label:"การพยาบาลผู้ป่วยใน Recovery room", unit:"ราย", weight:96,  detail:"24 นาที × น้ำหนัก 2 × บุคลากร 2"},
+  ]},
+  {name:"ASA Class ผู้ป่วยที่ดูแล (รวมรับ-ส่งเวร)", weightLabel:"ค่าคงที่ Productivity", productivity:true, items:[
+    {id:"asa1",label:"ASA 1",unit:"ราย",weight:3.52,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa2",label:"ASA 2",unit:"ราย",weight:5.33,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa3",label:"ASA 3",unit:"ราย",weight:6.64,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa4",label:"ASA 4",unit:"ราย",weight:7.12,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa5",label:"ASA 5",unit:"ราย",weight:7.53,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
+    {id:"asa6",label:"ASA 6",unit:"ราย",weight:7.53,detail:"ค่าคงที่สำหรับคำนวณ Productivity"},
   ]},
 ];
 
@@ -421,7 +462,7 @@ function buildModule(cfg){
   let selectedShift = null;
 
   const allItems = {};
-  cfg.categories.forEach(c => c.items.forEach(i => allItems[i.id] = i));
+  cfg.categories.forEach(c => c.items.forEach(i => allItems[i.id] = { ...i, _productivity: !!c.productivity && c.weightLabel === 'ค่าคงที่ Productivity' }));
 
   cfg.locations.forEach(loc => {
     const o = document.createElement('option');
@@ -471,8 +512,36 @@ function buildModule(cfg){
   if(cfg.hasShift && shiftSelect){
     shiftSelect.addEventListener('change', () => {
       selectedShift = shiftSelect.value || null;
+      updateShiftVisibility();
       updateReady();
     });
+  }
+
+  function shiftNeedsLocation(){
+    return !cfg.hasShift || !selectedShift || selectedShift === 'เช้าในเวลา';
+  }
+
+  function updateShiftVisibility(){
+    if(!cfg.hasShift) return;
+    const showFull = shiftNeedsLocation();
+    const locCard = locSelect.closest('.card');
+    if(locCard) locCard.style.display = showFull ? '' : 'none';
+    section.querySelectorAll('.cat').forEach((catEl, ci) => {
+      const cat = cfg.categories[ci];
+      if(!cat || !cat.mainCategory) return;
+      catEl.style.display = showFull ? '' : 'none';
+      if(!showFull){
+        // เคลียร์จำนวนที่นับไว้ในหมวดนี้ (ไม่ใช้กับเวรนี้) กันข้อมูลค้าง
+        cat.items.forEach(it => {
+          if(counts[it.id]){
+            counts[it.id] = 0;
+            const el = section.querySelector(`[data-val="${it.id}"]`);
+            if(el) el.textContent = '0';
+          }
+        });
+      }
+    });
+    updateCatCounts();
   }
 
   wrap.addEventListener('click', (e) => {
@@ -505,24 +574,41 @@ function buildModule(cfg){
   }
 
   function currentTotals(){
-    let weighted = 0, plain = 0;
+    let weighted = 0, asaWeighted = 0, plain = 0;
     Object.keys(counts).forEach(id => {
       const it = allItems[id]; const n = counts[id]||0;
       if(!n) return;
-      if(it.weight){ weighted += n*it.weight; } else { plain += n; }
+      if(it._productivity){ asaWeighted += n*it.weight; }
+      else if(it.weight){ weighted += n*it.weight; }
+      else { plain += n; }
     });
-    return {weighted, plain};
+    return {weighted, asaWeighted, plain};
   }
 
   function updateReady(){
     if(!cfg.active) return;
-    const {weighted, plain} = currentTotals();
-    const total = cfg.totalMode === 'weighted' ? weighted : (weighted + plain);
+    const {weighted, asaWeighted, plain} = currentTotals();
     const isZero = zeroConfirm && zeroConfirm.checked;
-    document.getElementById('totalDisplay').textContent = isZero ? '0' : (cfg.totalMode === 'weighted' ? total.toFixed(2) : total);
-    document.getElementById('totalLabel').textContent = isZero ? 'ยืนยันไม่มีเคสวันนี้' : cfg.totalLabel;
+    const hasP4P = weighted > 0 || plain > 0;
+    const hasAsa = asaWeighted > 0;
+    let displayVal, displayLabel;
+    if(isZero){
+      displayVal = '0'; displayLabel = 'ยืนยันไม่มีเคสวันนี้';
+    } else if(hasP4P && hasAsa){
+      displayVal = (weighted + plain).toFixed(2);
+      displayLabel = `${cfg.totalLabel} · ASA Productivity แยกคำนวณ ${asaWeighted.toFixed(2)}`;
+    } else if(hasAsa){
+      displayVal = asaWeighted.toFixed(2);
+      displayLabel = 'คะแนน ASA Productivity (คนละตัวชี้วัดกับ P4P)';
+    } else {
+      const total = cfg.totalMode === 'weighted' ? weighted : (weighted + plain);
+      displayVal = cfg.totalMode === 'weighted' ? total.toFixed(2) : total;
+      displayLabel = cfg.totalLabel;
+    }
+    document.getElementById('totalDisplay').textContent = displayVal;
+    document.getElementById('totalLabel').textContent = displayLabel;
     const hasItems = Object.values(counts).some(v=>v>0);
-    const hasLoc = !!locSelect.value;
+    const hasLoc = shiftNeedsLocation() ? !!locSelect.value : true;
     const hasShift = !cfg.hasShift || !!selectedShift;
     const hasDate = !cfg.hasDateSelect || (dateSelect && !!dateSelect.dataset.iso);
     document.getElementById('submitBtn').disabled = !((hasItems || isZero) && hasLoc && hasShift && hasDate);
@@ -530,9 +616,10 @@ function buildModule(cfg){
   locSelect.addEventListener('change', updateReady);
 
   function doSubmit(){
-    const loc = locSelect.value;
-    if(!loc) return;
     if(cfg.hasShift && !selectedShift) return;
+    const needsLoc = shiftNeedsLocation();
+    const loc = needsLoc ? locSelect.value : (locSelect.value || 'ทั้งเวร (ไม่ระบุจุด)');
+    if(needsLoc && !loc) return;
     const entryDate = (cfg.hasDateSelect && dateSelect && dateSelect.dataset.iso) ? dateSelect.dataset.iso : todayStr();
     const isZero = zeroConfirm && zeroConfirm.checked;
     const items = isZero
@@ -542,12 +629,12 @@ function buildModule(cfg){
           weight: allItems[id].weight || 0, count: counts[id]
         }));
     if(items.length===0) return;
-    const {weighted, plain} = currentTotals();
+    const {weighted, asaWeighted, plain} = currentTotals();
     const entry = {
       entryId: uid(), app: cfg.appId, date: entryDate, location: loc,
       shift: cfg.hasShift ? selectedShift : null,
       timestamp: new Date().toISOString(), items,
-      totalWeighted: isZero ? 0 : weighted, totalPlain: isZero ? 0 : plain, synced:false
+      totalWeighted: isZero ? 0 : weighted, totalAsa: isZero ? 0 : asaWeighted, totalPlain: isZero ? 0 : plain, synced:false
     };
     const q = loadQueue(); q.push(entry); saveQueue(q);
     counts = {};
@@ -575,33 +662,27 @@ function buildModule(cfg){
       const shiftTxt = entry.shift ? ` · ${entry.shift}` : '';
       const dateTxt = entry.date ? ` · ${formatDMY(entry.date)}` : '';
       const isZeroEntry = entry.items.length === 1 && entry.items[0].activityId === '_zero';
-      const scoreTxt = isZeroEntry
-        ? 'ยืนยันไม่มีเคส (0)'
-        : (cfg.totalMode === 'weighted'
+      const hasAsaPart = (entry.totalAsa || 0) > 0;
+      const hasP4pPart = (entry.totalWeighted || 0) > 0 || (entry.totalPlain || 0) > 0;
+      let scoreTxt;
+      if(isZeroEntry){
+        scoreTxt = 'ยืนยันไม่มีเคส (0)';
+      } else if(hasAsaPart && hasP4pPart){
+        scoreTxt = `${entry.items.length} กิจกรรม · P4P ${entry.totalWeighted.toFixed(2)} แต้ม · ASA Productivity ${entry.totalAsa.toFixed(2)}`;
+      } else if(hasAsaPart){
+        scoreTxt = `${entry.items.length} กิจกรรม · ASA Productivity ${entry.totalAsa.toFixed(2)}`;
+      } else {
+        scoreTxt = cfg.totalMode === 'weighted'
           ? `${entry.items.length} กิจกรรม · รวม ${entry.totalWeighted.toFixed(2)} ${cfg.totalLabel}`
-          : `${entry.items.length} กิจกรรม · รวม ${entry.totalPlain + entry.totalWeighted} รายการ`);
+          : `${entry.items.length} กิจกรรม · รวม ${entry.totalPlain + entry.totalWeighted} รายการ`;
+      }
       el.innerHTML = `
         <div class="hist-top"><div class="hist-loc">${entry.location}${shiftTxt}${dateTxt}</div><div class="hist-time">${time}</div></div>
         <div class="hist-pts">${scoreTxt}</div>
-        ${entry.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}
-        <div class="hist-actions"><button class="del" data-del="${entry.entryId}">ลบรายการนี้</button></div>`;
+        ${entry.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}`;
       historyList.appendChild(el);
     });
   }
-
-  historyList.addEventListener('click', (e) => {
-    const btn = e.target.closest('button[data-del]');
-    if(!btn) return;
-    const id = btn.dataset.del;
-    const q = loadQueue();
-    const entry = q.find(x => x.entryId === id);
-    if(!entry) return;
-    if(entry.synced){ entry.deleted = true; entry.deleteSynced = false; }
-    else { q.splice(q.indexOf(entry),1); }
-    saveQueue(q);
-    renderHistory();
-    attemptSync();
-  });
 
   document.getElementById('submitBtn').addEventListener('click', () => { if(cfg.active) doSubmit(); });
 
@@ -618,7 +699,7 @@ function buildModule(cfg){
   });
 
   return { updateReady, renderHistory, section,
-    activate(){ cfg.active = true; updateReady(); section.querySelector('.view-form').style.display='block'; section.querySelector('.view-history').style.display='none';
+    activate(){ cfg.active = true; updateShiftVisibility(); updateReady(); section.querySelector('.view-form').style.display='block'; section.querySelector('.view-history').style.display='none';
       section.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); section.querySelector('.tab[data-tab="form"]').classList.add('active');
       document.getElementById('footerBar').classList.remove('hidden'); },
     deactivate(){ cfg.active = false; }
@@ -627,7 +708,7 @@ function buildModule(cfg){
 
 const assistantModule = buildModule({
   appId:'assistant', locations:ASSISTANT_LOCATIONS, categories:ASSISTANT_CATEGORIES,
-  hasShift:false, totalMode:'weighted', totalLabel:'คะแนนรวมของรายการนี้ (แต้ม)', active:false
+  hasShift:false, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนนรวมของรายการนี้ (แต้ม)', active:false
 });
 const nurseModule = buildModule({
   appId:'nurse', locations:NURSE_LOCATIONS, categories:NURSE_CATEGORIES,
@@ -638,7 +719,7 @@ const nurseModule = buildModule({
    Navigation between Home / Assistant / Nurse
 ===================================================================== */
 const HEADER_CONFIG = {
-  home:      {title:'P4P AnesMNST', accent:'var(--teal)', showBack:false},
+  home:      {title:'P4P Anes', accent:'var(--teal)', showBack:false},
   assistant: {title:'P4P ผู้ช่วย',  accent:'var(--teal)', showBack:true},
   nurse:     {title:'P4P Nurse',    accent:'var(--indigo)', showBack:true},
 };
@@ -676,22 +757,51 @@ document.getElementById('backBtn').addEventListener('click', () => goTo('home'))
 /* =====================================================================
    Sync to Google Apps Script backend
 ===================================================================== */
+let syncInProgress = false; // กันไม่ให้ attemptSync ทำงานซ้อนกันหลายรอบพร้อมกัน (ต้นเหตุของบั๊กสถานะซิงก์สลับไปมา)
 async function attemptSync(){
-  const url = getWebAppUrl();
-  const q = loadQueue();
-  const pending = q.filter(e => !e.synced && !e.deleted);
-  const pendingDeletes = q.filter(e => e.deleted && !e.deleteSynced);
-  setSyncStatus();
-  if(!url || !navigator.onLine) return;
-  for(const entry of pending){
-    try{ await postToServer({ action:'create', ...entry }); entry.synced = true; }catch(err){}
+  if(syncInProgress) return; // มีอีกรอบกำลังทำงานอยู่แล้ว ไม่ต้องเริ่มซ้อน
+  syncInProgress = true;
+  try{
+    const url = getWebAppUrl();
+    const snapshot = loadQueue();
+    const pending = snapshot.filter(e => !e.synced && !e.deleted);
+    const pendingDeletes = snapshot.filter(e => e.deleted && !e.deleteSynced);
+    setSyncStatus();
+    if(!url || !navigator.onLine) return;
+
+    const syncedIds = [];
+    const deleteSyncedIds = [];
+    for(const entry of pending){
+      try{
+        if(entry.type === 'staffing'){
+          await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount, timestamp: entry.timestamp });
+        } else {
+          await postToServer({ action:'create', ...entry });
+        }
+        syncedIds.push(entry.entryId);
+      }catch(err){}
+    }
+    for(const entry of pendingDeletes){
+      try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); deleteSyncedIds.push(entry.entryId); }catch(err){}
+    }
+
+    // อ่านคิวล่าสุดอีกครั้งตอนจะบันทึกผล (ไม่ใช้ snapshot เดิมที่อาจเก่าไปแล้วระหว่างรอผลจากเซิร์ฟเวอร์)
+    // กันไม่ให้ไปเขียนทับรายการใหม่ที่เพิ่งถูกเพิ่มระหว่างนั้น หรือทำให้สถานะซิงก์ที่เพิ่งอัปเดตหายกลับไปเป็นเดิม
+    const latest = loadQueue();
+    latest.forEach(e => {
+      if(syncedIds.indexOf(e.entryId) !== -1) e.synced = true;
+      if(deleteSyncedIds.indexOf(e.entryId) !== -1) e.deleteSynced = true;
+    });
+    const cleaned = latest.filter(e => !(e.deleted && e.deleteSynced));
+    saveQueue(cleaned);
+    setSyncStatus();
+    // สั่งวาดหน้า "ประวัติวันนี้" ใหม่ทันที กันป้าย "รอซิงก์" ค้างอยู่บนจอทั้งที่ซิงก์เสร็จไปแล้วจริง
+    // (ปลอดภัยเรียกทั้งสองโมดูลแม้จะไม่ได้เปิดแท็บประวัติอยู่ตอนนั้น เพราะแค่วาด DOM ที่มีอยู่แล้วใหม่)
+    try{ assistantModule.renderHistory(); }catch(e){}
+    try{ nurseModule.renderHistory(); }catch(e){}
+  } finally {
+    syncInProgress = false;
   }
-  for(const entry of pendingDeletes){
-    try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); entry.deleteSynced = true; }catch(err){}
-  }
-  const cleaned = q.filter(e => !(e.deleted && e.deleteSynced));
-  saveQueue(cleaned);
-  setSyncStatus();
 }
 function postToServer(payload){
   const url = getWebAppUrl();
@@ -719,6 +829,45 @@ function setSyncStatus(){
 }
 window.addEventListener('online', attemptSync);
 setInterval(attemptSync, 20000);
+
+/* ---------- staffing entry modal (Nurse only) ---------- */
+const staffingModal = document.getElementById('staffingModal');
+const staffingDateInput = document.getElementById('staffingDateInput');
+const staffingShiftInput = document.getElementById('staffingShiftInput');
+const staffingCountInput = document.getElementById('staffingCountInput');
+
+document.querySelectorAll('.staffing-open-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(!staffingDateInput.dataset.iso){
+      staffingDateInput.dataset.iso = todayStr();
+      staffingDateInput.value = formatDMY(todayStr());
+    }
+    staffingModal.classList.add('show');
+  });
+});
+staffingDateInput.addEventListener('click', () => openCalendarFor(staffingDateInput, () => {}));
+document.getElementById('staffingCancel').addEventListener('click', () => staffingModal.classList.remove('show'));
+document.getElementById('staffingSave').addEventListener('click', () => {
+  const date = staffingDateInput.dataset.iso;
+  const shift = staffingShiftInput.value;
+  const count = parseFloat(staffingCountInput.value);
+  if(!date || !shift || !(count > 0)){
+    showToast('กรุณากรอกวันที่ เวร และจำนวนอัตรากำลังให้ครบ');
+    return;
+  }
+  const q = loadQueue();
+  q.push({
+    entryId: uid(), app: 'nurse', type: 'staffing',
+    date, shift, staffCount: count,
+    timestamp: new Date().toISOString(), synced: false
+  });
+  saveQueue(q);
+  staffingModal.classList.remove('show');
+  staffingShiftInput.value = '';
+  staffingCountInput.value = '';
+  showToast('บันทึกอัตรากำลังแล้ว กำลังซิงก์...');
+  attemptSync();
+});
 
 /* ---------- settings modal ---------- */
 const settingsModal = document.getElementById('settingsModal');
