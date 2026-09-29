@@ -774,7 +774,7 @@ async function attemptSync(){
     for(const entry of pending){
       try{
         if(entry.type === 'staffing'){
-          await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount });
+          await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount, timestamp: entry.timestamp });
         } else {
           await postToServer({ action:'create', ...entry });
         }
