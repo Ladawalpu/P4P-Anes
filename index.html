@@ -117,6 +117,7 @@
 
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .modal-bg.show{display:flex;}
+  #calendarModal{z-index:60;} /* ให้ปฏิทินอยู่เหนือกล่องอัตรากำลัง เลือกวันที่ได้โดยไม่ต้องปิดกล่องก่อน */
   .modal{background:var(--card);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:20px;max-height:80vh;overflow:auto;}
   .modal h3{margin-top:0;font-size:16px;}
   .modal input{width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid var(--line);font-size:15px;margin-bottom:12px;}
