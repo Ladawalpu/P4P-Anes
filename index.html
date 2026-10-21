@@ -105,6 +105,8 @@
   .tabs{display:flex;gap:6px;margin-bottom:14px;}
   .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:var(--card);border:1px solid var(--line);color:var(--text-2);}
   .tab.active{background:var(--btn,var(--teal));color:#fff;border-color:var(--btn,var(--teal));}
+  .pane-note{font-size:12px;color:var(--text-3);margin:0 2px 10px;line-height:1.5;}
+  .hist-kind{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:8px;margin-left:6px;background:var(--indigo-l);color:var(--indigo-d);vertical-align:1px;}
   .hist-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;}
   .hist-top{display:flex;justify-content:space-between;align-items:center;}
   .hist-loc{font-weight:600;font-size:14px;}
@@ -185,10 +187,34 @@
   <!-- ================= NURSE ================= -->
   <section class="screen" id="screen-nurse" data-app="nurse" data-accent="indigo">
     <div class="tabs">
-      <div class="tab active" data-tab="form">กรอกข้อมูล</div>
+      <div class="tab active" data-tab="p4p">P4P</div>
+      <div class="tab" data-tab="prod">ภาระงาน</div>
       <div class="tab" data-tab="history">ประวัติวันนี้</div>
     </div>
-    <div class="view-form">
+
+    <!-- แท็บ 1: ค่างานหลัก P4P (เวรเช้าในเวลา แยกตามจุดปฏิบัติงาน) -->
+    <div class="nurse-pane" data-pane="p4p">
+      <div class="pane-note">ค่างานหลัก P4P · บันทึกเฉพาะเวรเช้าในเวลา แยกตามจุดปฏิบัติงาน</div>
+      <div class="card">
+        <label class="field-label">วันที่ปฏิบัติงาน</label>
+        <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
+      </div>
+      <div class="card">
+        <label class="field-label">จุดปฏิบัติงาน</label>
+        <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
+      </div>
+      <div class="card zero-card">
+        <label style="display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;margin:0;">
+          <input type="checkbox" class="zero-confirm" style="width:20px;height:20px;flex-shrink:0;">
+          <span>ไม่มีเคส/ไม่มีงานที่จุดนี้วันนี้ (ยืนยันเป็น 0)</span>
+        </label>
+      </div>
+      <div class="categories-wrap"></div>
+    </div>
+
+    <!-- แท็บ 2: ค่าภาระงาน (Productivity) = จำนวนผู้ป่วยตาม ASA Class + อัตรากำลัง -->
+    <div class="nurse-pane" data-pane="prod" style="display:none;">
+      <div class="pane-note">ค่าภาระงาน (Productivity) · จำนวนผู้ป่วยตาม ASA Class แยกตามเวร และอัตรากำลังประจำวัน</div>
       <div class="card staffing-entry-card">
         <div style="display:flex;align-items:center;justify-content:space-between;">
           <div>
@@ -211,17 +237,18 @@
         </select>
       </div>
       <div class="card">
-        <label class="field-label">จุดปฏิบัติงาน</label>
+        <label class="field-label">จุดรวมผู้ป่วย (เฉพาะเวรเช้าในเวลา)</label>
         <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
       </div>
       <div class="card zero-card">
         <label style="display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;margin:0;">
           <input type="checkbox" class="zero-confirm" style="width:20px;height:20px;flex-shrink:0;">
-          <span>ไม่มีเคส/ไม่มีงานที่จุดนี้เวรนี้ (ยืนยันเป็น 0)</span>
+          <span>ไม่มีผู้ป่วยที่จุดนี้/เวรนี้ (ยืนยันเป็น 0)</span>
         </label>
       </div>
       <div class="categories-wrap"></div>
     </div>
+
     <div class="view-history" style="display:none;"><div class="history-list"></div></div>
 
   </section>
@@ -359,6 +386,8 @@ const ASSISTANT_CATEGORIES = [
   ]},
 ];
 
+// จุดรวมสำหรับลงจำนวนผู้ป่วยตาม ASA เวรเช้าในเวลา (แท็บภาระงาน) — ต้องตรงกับ Code.gs
+const ASA_LOCATIONS = ["CVT2","RRสูติ","RRช5","RRช6","Remote"];
 const NURSE_LOCATIONS = ["CVT1","CVT2","OR 602","OR 603","OR 604","OR 605","OR 606","OR 607","OR 608","OR 609","Remote","OR 501","OR 502","OR 503","OR 504","OR 505","OR 506","OR 507","OR 508","Endo1","Endo2","Endo3","สูติ1","สูติ2","สูติ3","RRสูติ","RRช5","RRช6","PAC","Post"];
 
 const NURSE_CATEGORIES = [
@@ -452,14 +481,15 @@ document.getElementById('calCancel').addEventListener('click', () => document.ge
 ===================================================================== */
 function buildModule(cfg){
   const section = document.getElementById('screen-' + cfg.appId);
-  const locSelect = section.querySelector('.loc-select');
-  const dateSelect = section.querySelector('.date-select');
-  const shiftSelect = section.querySelector('.shift-select');
-  const zeroConfirm = section.querySelector('.zero-confirm');
-  const wrap = section.querySelector('.categories-wrap');
+  const root = cfg.paneSelector ? section.querySelector(cfg.paneSelector) : section;
+  const locSelect = root.querySelector('.loc-select');
+  const dateSelect = root.querySelector('.date-select');
+  const shiftSelect = root.querySelector('.shift-select');
+  const zeroConfirm = root.querySelector('.zero-confirm');
+  const wrap = root.querySelector('.categories-wrap');
   const historyList = section.querySelector('.history-list');
   let counts = {};
-  let selectedShift = null;
+  let selectedShift = cfg.fixedShift || null;
 
   const allItems = {};
   cfg.categories.forEach(c => c.items.forEach(i => allItems[i.id] = { ...i, _productivity: !!c.productivity && c.weightLabel === 'ค่าคงที่ Productivity' }));
@@ -526,7 +556,7 @@ function buildModule(cfg){
     const showFull = shiftNeedsLocation();
     const locCard = locSelect.closest('.card');
     if(locCard) locCard.style.display = showFull ? '' : 'none';
-    section.querySelectorAll('.cat').forEach((catEl, ci) => {
+    root.querySelectorAll('.cat').forEach((catEl, ci) => {
       const cat = cfg.categories[ci];
       if(!cat || !cat.mainCategory) return;
       catEl.style.display = showFull ? '' : 'none';
@@ -535,7 +565,7 @@ function buildModule(cfg){
         cat.items.forEach(it => {
           if(counts[it.id]){
             counts[it.id] = 0;
-            const el = section.querySelector(`[data-val="${it.id}"]`);
+            const el = root.querySelector(`[data-val="${it.id}"]`);
             if(el) el.textContent = '0';
           }
         });
@@ -550,7 +580,7 @@ function buildModule(cfg){
     const id = btn.dataset.id;
     const delta = btn.dataset.act === 'inc' ? 1 : -1;
     counts[id] = Math.max(0, (counts[id]||0) + delta);
-    section.querySelector(`[data-val="${id}"]`).textContent = counts[id];
+    root.querySelector(`[data-val="${id}"]`).textContent = counts[id];
     updateCatCounts();
     syncZeroConfirmState();
     updateReady();
@@ -565,7 +595,7 @@ function buildModule(cfg){
   if(zeroConfirm){ zeroConfirm.addEventListener('change', updateReady); }
 
   function updateCatCounts(){
-    section.querySelectorAll('.cat').forEach((catEl, ci) => {
+    root.querySelectorAll('.cat').forEach((catEl, ci) => {
       const cat = cfg.categories[ci];
       const n = cat.items.reduce((s,i)=> s + (counts[i.id]||0), 0);
       const badge = catEl.querySelector('.cat-count');
@@ -623,7 +653,7 @@ function buildModule(cfg){
     const entryDate = (cfg.hasDateSelect && dateSelect && dateSelect.dataset.iso) ? dateSelect.dataset.iso : todayStr();
     const isZero = zeroConfirm && zeroConfirm.checked;
     const items = isZero
-      ? [{ activityId:'_zero', label:'ยืนยันไม่มีเคส (0)', unit:'-', weight:0, count:1 }]
+      ? [{ activityId: cfg.kind === 'productivity' ? '_zero_asa' : '_zero', label: cfg.kind === 'productivity' ? 'ยืนยันไม่มีผู้ป่วย ASA (0)' : 'ยืนยันไม่มีเคส (0)', unit:'-', weight:0, count:1 }]
       : Object.keys(counts).filter(id => counts[id]>0).map(id => ({
           activityId:id, label:allItems[id].label, unit:allItems[id].unit,
           weight: allItems[id].weight || 0, count: counts[id]
@@ -633,12 +663,13 @@ function buildModule(cfg){
     const entry = {
       entryId: uid(), app: cfg.appId, date: entryDate, location: loc,
       shift: cfg.hasShift ? selectedShift : null,
+      kind: cfg.kind || null,
       timestamp: new Date().toISOString(), items,
       totalWeighted: isZero ? 0 : weighted, totalAsa: isZero ? 0 : asaWeighted, totalPlain: isZero ? 0 : plain, synced:false
     };
     const q = loadQueue(); q.push(entry); saveQueue(q);
     counts = {};
-    section.querySelectorAll('.val').forEach(el => el.textContent = '0');
+    root.querySelectorAll('.val').forEach(el => el.textContent = '0');
     updateCatCounts();
     if(zeroConfirm){ zeroConfirm.checked = false; zeroConfirm.disabled = false; }
     updateReady();
@@ -660,8 +691,10 @@ function buildModule(cfg){
       el.className = 'hist-item';
       const time = new Date(entry.timestamp).toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'});
       const shiftTxt = entry.shift ? ` · ${entry.shift}` : '';
+      const kindTxt = entry.kind === 'p4p' ? '<span class="hist-kind">P4P</span>'
+        : entry.kind === 'productivity' ? '<span class="hist-kind">ภาระงาน</span>' : '';
       const dateTxt = entry.date ? ` · ${formatDMY(entry.date)}` : '';
-      const isZeroEntry = entry.items.length === 1 && entry.items[0].activityId === '_zero';
+      const isZeroEntry = entry.items.length === 1 && (entry.items[0].activityId === '_zero' || entry.items[0].activityId === '_zero_asa');
       const hasAsaPart = (entry.totalAsa || 0) > 0;
       const hasP4pPart = (entry.totalWeighted || 0) > 0 || (entry.totalPlain || 0) > 0;
       let scoreTxt;
@@ -677,7 +710,7 @@ function buildModule(cfg){
           : `${entry.items.length} กิจกรรม · รวม ${entry.totalPlain + entry.totalWeighted} รายการ`;
       }
       el.innerHTML = `
-        <div class="hist-top"><div class="hist-loc">${entry.location}${shiftTxt}${dateTxt}</div><div class="hist-time">${time}</div></div>
+        <div class="hist-top"><div class="hist-loc">${entry.location}${shiftTxt}${dateTxt}${kindTxt}</div><div class="hist-time">${time}</div></div>
         <div class="hist-pts">${scoreTxt}</div>
         ${entry.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}`;
       historyList.appendChild(el);
@@ -686,7 +719,7 @@ function buildModule(cfg){
 
   document.getElementById('submitBtn').addEventListener('click', () => { if(cfg.active) doSubmit(); });
 
-  section.querySelectorAll('.tab').forEach(tab => {
+  if(!cfg.customTabs) section.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', () => {
       section.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
       tab.classList.add('active');
@@ -698,6 +731,11 @@ function buildModule(cfg){
     });
   });
 
+  if(cfg.customTabs){
+    return { updateReady, renderHistory, section,
+      setActive(v){ cfg.active = v; if(v){ updateShiftVisibility(); updateReady(); } },
+      deactivate(){ cfg.active = false; } };
+  }
   return { updateReady, renderHistory, section,
     activate(){ cfg.active = true; updateShiftVisibility(); updateReady(); section.querySelector('.view-form').style.display='block'; section.querySelector('.view-history').style.display='none';
       section.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); section.querySelector('.tab[data-tab="form"]').classList.add('active');
@@ -710,10 +748,39 @@ const assistantModule = buildModule({
   appId:'assistant', locations:ASSISTANT_LOCATIONS, categories:ASSISTANT_CATEGORIES,
   hasShift:false, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนนรวมของรายการนี้ (แต้ม)', active:false
 });
-const nurseModule = buildModule({
-  appId:'nurse', locations:NURSE_LOCATIONS, categories:NURSE_CATEGORIES,
-  hasShift:true, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนนภาระงาน (แต้ม)', active:false
+/* Nurse แยกเป็น 2 โมดูล: P4P (กิจกรรมหลัก เวรเช้าในเวลา) และ ภาระงาน (ASA Class + อัตรากำลัง) */
+const nurseP4pModule = buildModule({
+  appId:'nurse', paneSelector:'.nurse-pane[data-pane="p4p"]', customTabs:true,
+  kind:'p4p', fixedShift:'เช้าในเวลา',
+  locations:NURSE_LOCATIONS, categories:[NURSE_CATEGORIES[0]],
+  hasShift:true, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนน P4P กิจกรรมหลัก (แต้ม)', active:false
 });
+const nurseProdModule = buildModule({
+  appId:'nurse', paneSelector:'.nurse-pane[data-pane="prod"]', customTabs:true,
+  kind:'productivity',
+  locations:ASA_LOCATIONS, categories:[NURSE_CATEGORIES[1]],
+  hasShift:true, hasDateSelect:true, totalMode:'weighted', totalLabel:'คะแนนภาระงาน (Productivity)', active:false
+});
+const nurseModule = (function(){
+  const sec = document.getElementById('screen-nurse');
+  let pane = 'p4p';
+  function show(name){
+    pane = name;
+    sec.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    sec.querySelectorAll('.nurse-pane').forEach(p => p.style.display = (p.dataset.pane === name) ? 'block' : 'none');
+    sec.querySelector('.view-history').style.display = (name === 'history') ? 'block' : 'none';
+    document.getElementById('footerBar').classList.toggle('hidden', name === 'history');
+    nurseP4pModule.setActive(name === 'p4p');
+    nurseProdModule.setActive(name === 'prod');
+    if(name === 'history') nurseP4pModule.renderHistory();
+  }
+  sec.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => show(t.dataset.tab)));
+  return {
+    activate(){ show('p4p'); },
+    deactivate(){ nurseP4pModule.deactivate(); nurseProdModule.deactivate(); },
+    renderHistory(){ nurseP4pModule.renderHistory(); }
+  };
+})();
 
 /* =====================================================================
    Navigation between Home / Assistant / Nurse
