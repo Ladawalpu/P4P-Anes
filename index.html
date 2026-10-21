@@ -105,6 +105,14 @@
   .tabs{display:flex;gap:6px;margin-bottom:14px;}
   .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-size:13px;font-weight:600;background:var(--card);border:1px solid var(--line);color:var(--text-2);}
   .tab.active{background:var(--btn,var(--teal));color:#fff;border-color:var(--btn,var(--teal));}
+  /* สีแต่ละแท็บของ Nurse (โทนม่วง-น้ำเงินเข้าชุดกัน) */
+  #screen-nurse .tab[data-tab="p4p"]{--tc:#5B4FCF;--tl:#ece9fb;--td:#372a8c;}
+  #screen-nurse .tab[data-tab="prod"]{--tc:#2F6FD6;--tl:#e4eefc;--td:#1d4590;}
+  #screen-nurse .tab[data-tab="staff"]{--tc:#9B4FC4;--tl:#f3e8fa;--td:#6a2d8c;}
+  #screen-nurse .tab[data-tab]{background:var(--tl);color:var(--td);border-color:var(--tl);}
+  #screen-nurse .tab[data-tab].active{background:var(--tc);color:#fff;border-color:var(--tc);}
+  .nurse-pane[data-pane="p4p"]{--pc:#5B4FCF;} .nurse-pane[data-pane="prod"]{--pc:#2F6FD6;} .nurse-pane[data-pane="staff"]{--pc:#9B4FC4;}
+  .nurse-pane .pane-note{border-left:3px solid var(--pc);padding-left:8px;}
   .pane-note{font-size:12px;color:var(--text-3);margin:0 2px 10px;line-height:1.5;}
   .hist-kind{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:8px;margin-left:6px;background:var(--indigo-l);color:var(--indigo-d);vertical-align:1px;}
   .hist-item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;}
@@ -788,6 +796,9 @@ const nurseModule = (function(){
     sec.querySelectorAll('.nurse-pane').forEach(p => p.style.display = (p.dataset.pane === name) ? 'block' : 'none');
     sec.querySelector('.view-history').style.display = 'none';
     document.getElementById('footerBar').classList.toggle('hidden', name === 'staff');
+    const tabColors = { p4p:['#5B4FCF','#372a8c'], prod:['#2F6FD6','#1d4590'], staff:['#9B4FC4','#6a2d8c'] }[name];
+    document.documentElement.style.setProperty('--btn', tabColors[0]);
+    document.documentElement.style.setProperty('--tot-c', tabColors[1]);
     nurseP4pModule.setActive(name === 'p4p');
     nurseProdModule.setActive(name === 'prod');
   }
