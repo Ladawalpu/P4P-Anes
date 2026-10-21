@@ -570,6 +570,9 @@ function buildModule(cfg){
     const showFull = shiftNeedsLocation();
     const locCard = locSelect.closest('.card');
     if(locCard) locCard.style.display = showFull ? '' : 'none';
+    // แท็บภาระงาน: เวรเช้าในเวลาลงอัตรากำลังที่แท็บ "อัตรากำลังในเวลา" จึงซ่อนกล่องอัตรากำลังไว้
+    const staffCard = root.querySelector('.staffing-entry-card');
+    if(staffCard) staffCard.style.display = (selectedShift === 'เช้าในเวลา') ? 'none' : '';
     root.querySelectorAll('.cat').forEach((catEl, ci) => {
       const cat = cfg.categories[ci];
       if(!cat || !cat.mainCategory) return;
