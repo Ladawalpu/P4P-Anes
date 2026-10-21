@@ -189,7 +189,7 @@
     <div class="tabs">
       <div class="tab active" data-tab="p4p">P4P</div>
       <div class="tab" data-tab="prod">ภาระงาน</div>
-      <div class="tab" data-tab="history">ประวัติวันนี้</div>
+      <div class="tab" data-tab="staff">อัตรากำลังในเวลา</div>
     </div>
 
     <!-- แท็บ 1: ค่างานหลัก P4P (เวรเช้าในเวลา แยกตามจุดปฏิบัติงาน) -->
@@ -215,15 +215,6 @@
     <!-- แท็บ 2: ค่าภาระงาน (Productivity) = จำนวนผู้ป่วยตาม ASA Class + อัตรากำลัง -->
     <div class="nurse-pane" data-pane="prod" style="display:none;">
       <div class="pane-note">ค่าภาระงาน (Productivity) · จำนวนผู้ป่วยตาม ASA Class แยกตามเวร และอัตรากำลังประจำวัน</div>
-      <div class="card staffing-entry-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div style="font-weight:600;font-size:14px;">อัตรากำลังประจำวัน</div>
-            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">สำหรับผู้รับผิดชอบ ใช้คำนวณ Productivity สิ้นเดือน</div>
-          </div>
-          <button class="staffing-open-btn" style="background:var(--indigo-l);color:var(--indigo-d);border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap;">บันทึก</button>
-        </div>
-      </div>
       <div class="card">
         <label class="field-label">วันที่ปฏิบัติงาน</label>
         <input type="text" class="date-select" readonly placeholder="เลือกวันที่">
@@ -236,6 +227,15 @@
           <option value="ดึก">ดึก</option>
         </select>
       </div>
+      <div class="card staffing-entry-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-weight:600;font-size:14px;">อัตรากำลัง เวรเช้านอกเวลา / บ่าย / ดึก</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">ใช้คำนวณ Productivity สิ้นเดือน</div>
+          </div>
+          <button class="staffing-open-btn" data-mode="other" style="background:var(--indigo-l);color:var(--indigo-d);border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap;">บันทึก</button>
+        </div>
+      </div>
       <div class="card">
         <label class="field-label">จุดรวมผู้ป่วย (เฉพาะเวรเช้าในเวลา)</label>
         <select class="loc-select"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
@@ -247,6 +247,20 @@
         </label>
       </div>
       <div class="categories-wrap"></div>
+    </div>
+
+    <!-- แท็บ 3: อัตรากำลังประจำวัน (ผู้รับผิดชอบคนละคนกับผู้ลงข้อมูลจุด) -->
+    <div class="nurse-pane" data-pane="staff" style="display:none;">
+      <div class="pane-note">อัตรากำลังเวรเช้าในเวลา · สำหรับผู้รับผิดชอบ ใช้คำนวณ Productivity สิ้นเดือน</div>
+      <div class="card staffing-entry-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-weight:600;font-size:14px;">อัตรากำลังเวรเช้าในเวลา</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:2px;">บันทึกวันละ 1 ครั้ง</div>
+          </div>
+          <button class="staffing-open-btn" data-mode="in" style="background:var(--indigo-l);color:var(--indigo-d);border:none;padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;white-space:nowrap;">บันทึก</button>
+        </div>
+      </div>
     </div>
 
     <div class="view-history" style="display:none;"><div class="history-list"></div></div>
@@ -768,11 +782,10 @@ const nurseModule = (function(){
     pane = name;
     sec.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
     sec.querySelectorAll('.nurse-pane').forEach(p => p.style.display = (p.dataset.pane === name) ? 'block' : 'none');
-    sec.querySelector('.view-history').style.display = (name === 'history') ? 'block' : 'none';
-    document.getElementById('footerBar').classList.toggle('hidden', name === 'history');
+    sec.querySelector('.view-history').style.display = 'none';
+    document.getElementById('footerBar').classList.toggle('hidden', name === 'staff');
     nurseP4pModule.setActive(name === 'p4p');
     nurseProdModule.setActive(name === 'prod');
-    if(name === 'history') nurseP4pModule.renderHistory();
   }
   sec.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => show(t.dataset.tab)));
   return {
@@ -903,8 +916,17 @@ const staffingDateInput = document.getElementById('staffingDateInput');
 const staffingShiftInput = document.getElementById('staffingShiftInput');
 const staffingCountInput = document.getElementById('staffingCountInput');
 
+const STAFF_SHIFTS_OTHER = ['เช้านอกเวลา','บ่าย','ดึก'];
 document.querySelectorAll('.staffing-open-btn').forEach(btn => {
   btn.addEventListener('click', () => {
+    const inMode = btn.dataset.mode === 'in';
+    staffingShiftInput.innerHTML = inMode
+      ? '<option value="เช้าในเวลา">เช้าในเวลา</option>'
+      : '<option value="">-- เลือกเวร --</option>' + STAFF_SHIFTS_OTHER.map(x => `<option value="${x}">${x}</option>`).join('');
+    staffingShiftInput.value = inMode ? 'เช้าในเวลา' : '';
+    staffingShiftInput.style.display = inMode ? 'none' : '';
+    if(staffingShiftInput.previousElementSibling) staffingShiftInput.previousElementSibling.style.display = inMode ? 'none' : '';
+    document.querySelector('#staffingModal h3').textContent = inMode ? 'บันทึกอัตรากำลัง เวรเช้าในเวลา' : 'บันทึกอัตรากำลัง เวรนอกเวลา/บ่าย/ดึก';
     if(!staffingDateInput.dataset.iso){
       staffingDateInput.dataset.iso = todayStr();
       staffingDateInput.value = formatDMY(todayStr());
@@ -930,7 +952,6 @@ document.getElementById('staffingSave').addEventListener('click', () => {
   });
   saveQueue(q);
   staffingModal.classList.remove('show');
-  staffingShiftInput.value = '';
   staffingCountInput.value = '';
   showToast('บันทึกอัตรากำลังแล้ว กำลังซิงก์...');
   attemptSync();
