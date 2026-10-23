@@ -328,6 +328,11 @@
     <label class="field-label">Web App URL (จาก Google Apps Script)</label>
     <input type="text" id="webAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
     <div class="hint">ใช้ URL เดียวกันได้ทั้ง P4P ผู้ช่วยและ P4P Nurse ระบบจะแยกชีตให้อัตโนมัติ ดูวิธีตั้งค่าใน README.md</div>
+    <div style="border-top:1px solid var(--line);margin:16px 0 12px;"></div>
+    <label class="field-label">ส่งข้อมูลซ้ำ (กู้ข้อมูลที่ตกหล่น)</label>
+    <input type="date" id="resendFromInput" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;margin-bottom:8px;">
+    <button class="btn-secondary" id="resendBtn" style="width:100%;">ส่งข้อมูลของเครื่องนี้ซ้ำ ตั้งแต่วันที่เลือก</button>
+    <div class="hint">ใช้เมื่อข้อมูลในชีตหาย/ไม่ครบ ระบบจะส่งรายการในเครื่องนี้ตั้งแต่วันที่เลือกเป็นต้นไปอีกครั้ง รายการที่มีในชีตแล้วจะไม่ถูกเพิ่มซ้ำ (ทำได้ซ้ำหลายครั้งโดยไม่เสียหาย)</div>
     <div class="modal-row">
       <button class="btn-secondary" id="settingsCancel">ปิด</button>
       <button class="btn-primary" id="settingsSave">บันทึก</button>
@@ -969,6 +974,22 @@ document.getElementById('staffingSave').addEventListener('click', () => {
   staffingModal.classList.remove('show');
   staffingCountInput.value = '';
   showToast('บันทึกอัตรากำลังแล้ว กำลังซิงก์...');
+  attemptSync();
+});
+
+/* ---------- ส่งข้อมูลซ้ำ (กู้ข้อมูลที่ตกหล่น) ---------- */
+document.getElementById('resendBtn').addEventListener('click', () => {
+  const from = document.getElementById('resendFromInput').value; // yyyy-mm-dd
+  if(!from){ showToast('กรุณาเลือกวันที่เริ่มต้นก่อน'); return; }
+  const q = loadQueue();
+  let n = 0;
+  q.forEach(e => {
+    if(e.deleted) return;
+    if(e.date && e.date >= from){ e.synced = false; n++; }
+  });
+  saveQueue(q);
+  if(n === 0){ showToast('ไม่พบรายการในเครื่องนี้ตั้งแต่วันที่เลือก'); return; }
+  showToast(`กำลังส่งซ้ำ ${n} รายการ...`);
   attemptSync();
 });
 
