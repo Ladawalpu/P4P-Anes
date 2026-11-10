@@ -1036,7 +1036,7 @@ const QI_URL_KEY = 'qi_anes_webapp_url';
 const QI_REPORTER_KEY = 'qi_anes_reporter';
 const QI_ADMIN_NAME_KEY = 'qi_anes_admin_name';
 // หลัง Deploy QI_Code.gs แล้ว ให้วาง URL /exec ที่นี่ จะได้ไม่ต้องตั้งค่าทีละเครื่อง
-const DEFAULT_QI_URL = "";
+const DEFAULT_QI_URL = "https://script.google.com/macros/s/AKfycbxxny27_39h7qO9VuuRaasZ8HxfodDdykdax9yteWS2gY-Xtd98W0mnTA0EUq1ssM5D/exec";
 function getQiUrl(){ return storeGet(QI_URL_KEY) || DEFAULT_QI_URL; }
 function setQiUrl(u){ storeSet(QI_URL_KEY, u); }
 // วันที่ตามเวลาเครื่อง (ไทย) — ใช้กับหน้า QI เพื่อให้เวรดึกหลังเที่ยงคืนได้วันที่ถูกต้อง
