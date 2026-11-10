@@ -1,4 +1,4 @@
-const CACHE = 'p4p-anes-v2';
+const CACHE = 'p4p-anes-v3';
 const ASSETS = ['./index.html', './manifest.json'];
 // ไฟล์ที่ต้องอัปเดตได้ทันทีเสมอ (โหลดจากอินเทอร์เน็ตสดก่อน ใช้แคชเป็นตัวสำรองตอนออฟไลน์เท่านั้น)
 const NETWORK_FIRST = ['index.html', 'manifest.json'];

@@ -136,6 +136,76 @@
   .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#2c2c2a;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.show{opacity:1;}
   .hint{font-size:12px;color:var(--text-3);margin-top:4px;}
+
+  /* ---------- QI (ตัวชี้วัดคุณภาพ) ---------- */
+  :root{ --qi:#C2410C; --qi-d:#7c2d12; --qi-l:#fff1e8; --green:#1e6b3c; --green-l:#e3f5ea; }
+  .tile-qi{--tile-c:var(--qi);--tile-l:var(--qi-l);--tile-d:var(--qi-d);}
+  #screen-qi .tabs .tab{font-size:12px;padding:9px 2px;}
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .cal-nav .cal-monthlabel{margin:0;flex:1;}
+  .cal-nav button{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:16px;}
+  .cal-nav button[hidden]{visibility:hidden;display:block;}
+  .cal-day.dis{opacity:.3;pointer-events:none;}
+  .qi-input{width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:16px;background:#fff;color:var(--text);margin-bottom:12px;font-family:inherit;}
+  .qi-input:focus{outline:2px solid var(--qi);}
+  textarea.qi-input{min-height:64px;resize:vertical;}
+  .qi-note{font-size:12px;color:var(--text-2);line-height:1.6;background:var(--qi-l);border-radius:10px;padding:10px 12px;margin-bottom:14px;}
+  .ev-group-title{font-size:12px;color:var(--text-3);font-weight:700;margin:14px 0 8px;}
+  .ev-group-title:first-child{margin-top:0;}
+  .chip-grid{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{padding:9px 12px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:13px;line-height:1.35;cursor:pointer;user-select:none;}
+  .chip .k{font-size:10.5px;font-weight:700;color:var(--text-3);margin-right:4px;}
+  .chip.on{background:var(--qi);color:#fff;border-color:var(--qi);}
+  .chip.on .k{color:#ffd9c2;}
+  .ev-detail{border-left:4px solid var(--qi);}
+  .ev-detail h4{margin:0 0 12px;font-size:14px;color:var(--qi-d);}
+  .sev-row{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:6px;}
+  .sev{aspect-ratio:1;border-radius:9px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:14px;color:var(--text-2);}
+  .sev.ei{border-color:#f2c4b0;}
+  .sev.on{background:var(--qi);border-color:var(--qi);color:#fff;}
+  .time-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .warn-box{background:var(--amber-l);color:#6b4410;border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55;margin-top:4px;}
+  .ok-box{background:var(--green-l);color:var(--green);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.55;margin-top:4px;}
+  .qi-btn{width:100%;background:var(--qi);color:#fff;border:none;padding:15px;border-radius:12px;font-size:15px;font-weight:600;}
+  .qi-btn:disabled{background:#c9c7bd;}
+  .qi-btn.ghost{background:var(--qi-l);color:var(--qi-d);}
+  .qi-missing{font-size:12px;color:var(--text-3);margin-top:8px;line-height:1.5;}
+  .hist-del{background:none;border:1px solid var(--line);color:var(--red);border-radius:8px;font-size:12px;padding:4px 10px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center;}
+  .stat .n{font-size:20px;font-weight:700;color:var(--qi-d);}
+  .stat .l{font-size:11px;color:var(--text-3);margin-top:2px;line-height:1.35;}
+  .kpi-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line);}
+  .kpi-row:first-of-type{border-top:none;}
+  .kpi-name{font-size:13px;line-height:1.45;flex:1;}
+  .kpi-code{font-size:11px;font-weight:700;color:var(--qi-d);margin-right:4px;}
+  .kpi-tgt{font-size:11px;color:var(--text-3);margin-top:2px;}
+  .kpi-right{text-align:right;flex-shrink:0;}
+  .kpi-val{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .kpi-ab{font-size:11px;color:var(--text-3);font-variant-numeric:tabular-nums;}
+  .st{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:3px;}
+  .st-pass{background:var(--green-l);color:var(--green);}
+  .st-fail{background:var(--red-l);color:var(--red);}
+  .st-none,.st-na{background:var(--bg);color:var(--text-3);}
+  .chart-title{font-size:13px;font-weight:600;margin:0 0 8px;color:var(--text-2);}
+  .bars{display:flex;align-items:flex-end;gap:2px;height:90px;border-bottom:1px solid var(--line);}
+  .bars .b{flex:1;border-radius:2px 2px 0 0;min-height:0;position:relative;}
+  .bars .b.c{background:#f3b48f;} .bars .b.e{background:var(--qi);} .bars .b.t{background:var(--qi);}
+  .bars .b.miss{background:repeating-linear-gradient(45deg,#e3e1d9,#e3e1d9 3px,#f7f7f5 3px,#f7f7f5 6px);height:100% !important;opacity:.6;}
+  .bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:4px;}
+  .trend-labels{display:flex;gap:2px;font-size:9.5px;color:var(--text-3);margin-top:4px;}
+  .trend-labels span{flex:1;text-align:center;}
+  .trend-vals{display:flex;gap:2px;font-size:9.5px;color:var(--text-2);margin-bottom:3px;font-variant-numeric:tabular-nums;}
+  .trend-vals span{flex:1;text-align:center;}
+  .day-list{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .day-cell{border-radius:8px;padding:5px 2px;text-align:center;font-size:11px;background:var(--bg);border:1px solid var(--line);cursor:pointer;line-height:1.3;}
+  .day-cell b{display:block;font-size:12px;}
+  .day-cell.ok{background:var(--green-l);border-color:#bfe3cc;}
+  .day-cell.part{background:var(--amber-l);border-color:#f0d29c;}
+  .day-cell.miss{background:var(--red-l);border-color:#f2c0c0;}
+  .day-cell.future{opacity:.35;pointer-events:none;}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--text-3);margin-top:8px;}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
 </style>
 </head>
 <body>
@@ -163,6 +233,11 @@
     <div class="app-tile tile-nurse" data-goto="nurse">
       <div class="emoji">💉</div>
       <div class="tt"><h2>P4P Nurse</h2><p>บันทึกภาระงานวิสัญญีพยาบาล แยกตามเวรและอัตรากำลัง</p></div>
+      <div class="arrow">›</div>
+    </div>
+    <div class="app-tile tile-qi" data-goto="qi">
+      <div class="emoji">🛡️</div>
+      <div class="tt"><h2>ตัวชี้วัดคุณภาพ (QI)</h2><p>บันทึกเหตุการณ์ (Event) ตัวชี้วัดคุณภาพการพยาบาลวิสัญญี และดู Dashboard</p></div>
       <div class="arrow">›</div>
     </div>
   </section>
@@ -275,6 +350,120 @@
     <div class="view-history" style="display:none;"><div class="history-list"></div></div>
 
   </section>
+
+  <!-- ================= QI: ตัวชี้วัดคุณภาพการพยาบาลวิสัญญี ================= -->
+  <section class="screen" id="screen-qi">
+    <div class="tabs">
+      <div class="tab active" data-qtab="event">บันทึก Event</div>
+      <div class="tab" data-qtab="history">ประวัติ</div>
+      <div class="tab" data-qtab="dash">Dashboard</div>
+      <div class="tab" data-qtab="admin">Admin 🔒</div>
+    </div>
+
+    <!-- แท็บ 1: บันทึก Event -->
+    <div class="qi-pane" data-qpane="event">
+      <div class="qi-note">บันทึกเฉพาะเคสที่มีเหตุการณ์ (Event) · รายงานเพื่อเรียนรู้และพัฒนาระบบ ไม่ใช่เพื่อหาผู้ผิด<br>
+        <b>Med error / การให้เลือด / พลัดตกหกล้ม</b> กรุณารายงานทุกระดับ A–I รวม near miss</div>
+      <div class="card">
+        <label class="field-label">วันที่เริ่มให้ยาระงับความรู้สึก</label>
+        <input type="text" class="date-select" id="qiDate" readonly placeholder="เลือกวันที่">
+        <div class="hint" style="margin-bottom:12px;">เคสคร่อมเวร/คร่อมวัน ให้ใช้วันที่เริ่มให้ยาระงับความรู้สึก ไม่ใช่วันที่เกิดเหตุ</div>
+        <label class="field-label">เวรที่บันทึก</label>
+        <select id="qiShift" style="margin-bottom:12px;">
+          <option value="">-- เลือกเวร --</option>
+          <option value="เช้าในเวลา">เช้าในเวลา</option>
+          <option value="เช้านอกเวลา">เช้านอกเวลา</option>
+          <option value="บ่าย">บ่าย</option>
+          <option value="ดึก">ดึก</option>
+        </select>
+        <label class="field-label">จุดปฏิบัติงาน</label>
+        <select id="qiLoc"><option value="">-- เลือกจุดปฏิบัติงาน --</option></select>
+      </div>
+
+      <div class="card">
+        <label class="field-label">เลือกเหตุการณ์ที่เกิดขึ้น (เลือกได้มากกว่า 1)</label>
+        <div id="qiChips"></div>
+      </div>
+
+      <div class="card" id="qiPatientCard" style="display:none;">
+        <label class="field-label">HN ผู้ป่วย</label>
+        <input type="text" class="qi-input" id="qiHN" inputmode="numeric" autocomplete="off" maxlength="20" placeholder="เช่น 0012345">
+        <label class="field-label">ชนิดการระงับความรู้สึก</label>
+        <select id="qiAnes">
+          <option value="">-- เลือก --</option>
+          <option value="GA (ใส่ ETT)">GA (ใส่ ETT)</option>
+          <option value="GA (LMA/Mask/TIVA)">GA (LMA/Mask/TIVA)</option>
+          <option value="RA">RA (Spinal/Epidural/Block)</option>
+          <option value="MAC">MAC</option>
+          <option value="Combined GA+RA">Combined GA+RA</option>
+          <option value="ยังไม่ได้ให้ยาระงับความรู้สึก">ยังไม่ได้ให้ยาระงับความรู้สึก (เลื่อน/งดผ่าตัด)</option>
+        </select>
+        <div id="qiDupBox"></div>
+      </div>
+
+      <div id="qiDetails"></div>
+
+      <div class="card" id="qiReporterCard" style="display:none;">
+        <label class="field-label">ผู้รายงาน</label>
+        <input type="text" class="qi-input" id="qiReporter" autocomplete="name" placeholder="ชื่อ-สกุล หรือชื่อเล่น" style="margin-bottom:4px;">
+        <div class="hint">ระบบจำชื่อไว้ในเครื่องนี้ ครั้งหน้าไม่ต้องพิมพ์ใหม่</div>
+        <label id="qiDupConfirmWrap" style="display:none;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer;margin-top:12px;line-height:1.5;">
+          <input type="checkbox" id="qiDupConfirm" style="width:20px;height:20px;flex-shrink:0;margin:0;">
+          <span>ยืนยันว่าเป็น<b>เหตุการณ์ใหม่</b> ไม่ใช่รายการเดียวกับที่บันทึกไว้แล้ว</span>
+        </label>
+      </div>
+
+      <button class="qi-btn" id="qiSubmit" disabled>บันทึก Event</button>
+      <div class="hint" id="qiSubmitHint" style="text-align:center;margin-top:8px;"></div>
+    </div>
+
+    <!-- แท็บ 2: ประวัติ -->
+    <div class="qi-pane" data-qpane="history" style="display:none;">
+      <div class="pane-note">Event ที่บันทึกจากเครื่องนี้ 7 วันล่าสุด · ลบได้ถ้าบันทึกผิด แล้วบันทึกใหม่</div>
+      <div id="qiHistory"></div>
+    </div>
+
+    <!-- แท็บ 3: Dashboard -->
+    <div class="qi-pane" data-qpane="dash" style="display:none;">
+      <div class="card" style="display:flex;gap:10px;align-items:center;">
+        <input type="month" id="qiDashMonth" class="qi-input" style="margin:0;flex:1;">
+        <button class="qi-btn ghost" id="qiDashRefresh" style="width:auto;padding:12px 16px;">โหลด</button>
+      </div>
+      <div id="qiDash"><div class="empty">กำลังโหลด...</div></div>
+    </div>
+
+    <!-- แท็บ 4: Admin -->
+    <div class="qi-pane" data-qpane="admin" style="display:none;">
+      <div class="card" id="qiLockCard">
+        <label class="field-label">PIN ผู้ดูแล (Admin)</label>
+        <input type="password" class="qi-input" id="qiPin" inputmode="numeric" autocomplete="off" placeholder="กรอก PIN">
+        <button class="qi-btn" id="qiUnlock">เข้าสู่หน้า Admin</button>
+        <div class="hint" style="margin-top:8px;">สำหรับผู้รับผิดชอบกรอกยอดผู้ป่วยรายวันจากรายงาน HosXP</div>
+      </div>
+      <div id="qiAdminBody" style="display:none;">
+        <div class="card">
+          <label class="field-label">วันที่</label>
+          <input type="text" class="date-select" id="qiAdminDate" readonly placeholder="เลือกวันที่" style="margin-bottom:12px;">
+          <label class="field-label">ผู้ป่วยที่ได้รับยาระงับความรู้สึกทั้งหมด (ราย)</label>
+          <input type="number" class="qi-input" id="qiTotal" min="0" step="1" inputmode="numeric" placeholder="นับไม่ซ้ำคน ไม่นับซ้ำตามเวร">
+          <label class="field-label">ผู้ป่วยที่ใส่ ETT (ราย)</label>
+          <input type="number" class="qi-input" id="qiEtt" min="0" step="1" inputmode="numeric" placeholder="ใช้เป็นตัวหารของ Re-intubation">
+          <label style="display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer;line-height:1.5;margin-bottom:12px;">
+            <input type="checkbox" id="qiVerified" style="width:20px;height:20px;flex-shrink:0;margin:0;">
+            <span>ตรวจสอบแล้ว: Event ของวันนี้บันทึกครบ ไม่มีตกหล่น</span>
+          </label>
+          <label class="field-label">ผู้บันทึก</label>
+          <input type="text" class="qi-input" id="qiAdminName" placeholder="ชื่อผู้บันทึก">
+          <button class="qi-btn" id="qiAdminSave">บันทึกยอดวันนี้</button>
+          <div class="hint" style="margin-top:8px;">1 วัน = 1 รายการ · บันทึกซ้ำวันเดิมจะแก้ไขทับค่าเดิม</div>
+        </div>
+        <div class="card">
+          <div class="chart-title" id="qiAdminMonthTitle">สถานะการกรอกยอดเดือนนี้</div>
+          <div id="qiAdminDays"><div class="empty" style="padding:16px;">กำลังโหลด...</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <div class="footer-bar hidden" id="footerBar">
@@ -290,7 +479,11 @@
 <div class="modal-bg" id="calendarModal">
   <div class="modal">
     <h3>เลือกวันที่ปฏิบัติงาน</h3>
-    <div class="cal-monthlabel" id="calMonthLabel"></div>
+    <div class="cal-nav">
+      <button id="calPrev" hidden aria-label="เดือนก่อน">‹</button>
+      <div class="cal-monthlabel" id="calMonthLabel"></div>
+      <button id="calNext" hidden aria-label="เดือนถัดไป">›</button>
+    </div>
     <div class="cal-weekdays"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="modal-row">
@@ -328,6 +521,9 @@
     <label class="field-label">Web App URL (จาก Google Apps Script)</label>
     <input type="text" id="webAppUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
     <div class="hint">ใช้ URL เดียวกันได้ทั้ง P4P ผู้ช่วยและ P4P Nurse ระบบจะแยกชีตให้อัตโนมัติ ดูวิธีตั้งค่าใน README.md</div>
+    <label class="field-label" style="margin-top:14px;">Web App URL ตัวชี้วัดคุณภาพ (QI)</label>
+    <input type="text" id="qiUrlInput" placeholder="https://script.google.com/macros/s/.../exec">
+    <div class="hint">คนละ URL กับ P4P (จาก QI_Code.gs) ดูวิธีตั้งค่าใน README_QI.md</div>
     <div style="border-top:1px solid var(--line);margin:16px 0 12px;"></div>
     <label class="field-label">ส่งข้อมูลซ้ำ (กู้ข้อมูลที่ตกหล่น)</label>
     <input type="date" id="resendFromInput" style="width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--line);font-size:15px;margin-bottom:8px;">
@@ -466,9 +662,15 @@ function thaiMonthFull(m){ return ['มกราคม','กุมภาพั�
 function formatDMY(iso){ const [y,m,d] = iso.split('-'); return `${d}/${m}/${y}`; }
 
 let activeCalendarTarget = null;
+let calView = null; // {y, m} — ใช้เฉพาะปฏิทินที่เปิดให้เลื่อนเดือนได้ (หน้า QI)
 function buildCalendarGrid(selectedIso){
   const now = new Date();
-  const year = now.getFullYear(), month = now.getMonth();
+  const opts = (activeCalendarTarget && activeCalendarTarget.opts) || {};
+  const year = (opts.allowNav && calView) ? calView.y : now.getFullYear();
+  const month = (opts.allowNav && calView) ? calView.m : now.getMonth();
+  const maxIso = opts.maxIso || null;
+  document.getElementById('calPrev').hidden = !opts.allowNav;
+  document.getElementById('calNext').hidden = !opts.allowNav || (year > now.getFullYear() || (year === now.getFullYear() && month >= now.getMonth()));
   const daysInMonth = new Date(year, month+1, 0).getDate();
   const firstWeekday = new Date(year, month, 1).getDay();
   const pad = n => String(n).padStart(2,'0');
@@ -482,20 +684,30 @@ function buildCalendarGrid(selectedIso){
   for(let d=1; d<=daysInMonth; d++){
     const iso = `${year}-${pad(month+1)}-${pad(d)}`;
     const cell = document.createElement('div');
-    cell.className = 'cal-day' + (iso===selectedIso ? ' sel' : '') + (iso===todayStr() ? ' today' : '');
+    cell.className = 'cal-day' + (iso===selectedIso ? ' sel' : '') + (iso===todayStr() ? ' today' : '') + (maxIso && iso > maxIso ? ' dis' : '');
     cell.textContent = d;
     cell.dataset.iso = iso;
     grid.appendChild(cell);
   }
   document.getElementById('calMonthLabel').textContent = `${thaiMonthFull(month)} ${year+543}`;
 }
-function openCalendarFor(inputEl, onChangeCb){
-  activeCalendarTarget = { input: inputEl, onChange: onChangeCb };
-  buildCalendarGrid(inputEl.dataset.iso || todayStr());
+function openCalendarFor(inputEl, onChangeCb, opts){
+  activeCalendarTarget = { input: inputEl, onChange: onChangeCb, opts: opts || {} };
+  const sel = inputEl.dataset.iso || todayStr();
+  calView = { y: Number(sel.slice(0,4)), m: Number(sel.slice(5,7)) - 1 };
+  buildCalendarGrid(sel);
   document.getElementById('calendarModal').classList.add('show');
 }
+function shiftCalendar(delta){
+  if(!calView || !activeCalendarTarget) return;
+  const d = new Date(calView.y, calView.m + delta, 1);
+  calView = { y: d.getFullYear(), m: d.getMonth() };
+  buildCalendarGrid(activeCalendarTarget.input.dataset.iso || todayStr());
+}
+document.getElementById('calPrev').addEventListener('click', () => shiftCalendar(-1));
+document.getElementById('calNext').addEventListener('click', () => shiftCalendar(1));
 document.getElementById('calGrid').addEventListener('click', (e) => {
-  const cell = e.target.closest('.cal-day:not(.blank)');
+  const cell = e.target.closest('.cal-day:not(.blank):not(.dis)');
   if(!cell || !activeCalendarTarget) return;
   activeCalendarTarget.input.dataset.iso = cell.dataset.iso;
   activeCalendarTarget.input.value = formatDMY(cell.dataset.iso);
@@ -816,12 +1028,495 @@ const nurseModule = (function(){
 })();
 
 /* =====================================================================
-   Navigation between Home / Assistant / Nurse
+   QI — ตัวชี้วัดคุณภาพการพยาบาลวิสัญญี
+   บันทึกเฉพาะเคสที่มี Event · Admin กรอกยอดผู้ป่วยรายวัน (ตัวหาร) · Dashboard
+   ข้อมูลส่งไปคนละ Web App กับ P4P (QI_Code.gs) — ไม่กระทบชีต P4P เดิม
+===================================================================== */
+const QI_URL_KEY = 'qi_anes_webapp_url';
+const QI_REPORTER_KEY = 'qi_anes_reporter';
+const QI_ADMIN_NAME_KEY = 'qi_anes_admin_name';
+// หลัง Deploy QI_Code.gs แล้ว ให้วาง URL /exec ที่นี่ จะได้ไม่ต้องตั้งค่าทีละเครื่อง
+const DEFAULT_QI_URL = "https://script.google.com/macros/s/AKfycbxxny27_39h7qO9VuuRaasZ8HxfodDdykdax9yteWS2gY-Xtd98W0mnTA0EUq1ssM5D/exec";
+function getQiUrl(){ return storeGet(QI_URL_KEY) || DEFAULT_QI_URL; }
+function setQiUrl(u){ storeSet(QI_URL_KEY, u); }
+// วันที่ตามเวลาเครื่อง (ไทย) — ใช้กับหน้า QI เพื่อให้เวรดึกหลังเที่ยงคืนได้วันที่ถูกต้อง
+function localTodayStr(){ const d = new Date(); const p = n => String(n).padStart(2,'0'); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+function escHtml(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+const SEVERITY_LEVELS = ['A','B','C','D','E','F','G','H','I'];
+const QI_EVENT_GROUPS = [
+  { name:'การเลื่อน/งดผ่าตัด', items:[
+    { id:'postpone_patient', kpi:'2.2', short:'เลื่อนผ่าตัด: ผู้ป่วยไม่พร้อม', label:'เลื่อน/งดผ่าตัด: ผู้ป่วยไม่พร้อมระงับความรู้สึก', needHN:true,
+      reasonLabel:'สาเหตุ', reasons:['งดน้ำงดอาหารไม่ครบ','ไม่ได้งด/ปรับยาตามแผน','ผล Lab/การตรวจไม่พร้อม','ไม่ได้รับการเตรียม/ประเมินก่อนผ่าตัด','ผู้ป่วยไม่ได้ปฏิบัติตามคำแนะนำอื่น'] },
+    { id:'postpone_equip', kpi:'2.3', short:'เลื่อนผ่าตัด: ยา/อุปกรณ์ไม่พร้อม', label:'เลื่อน/งดผ่าตัด: ยา เวชภัณฑ์ เครื่องมือ อุปกรณ์ไม่พร้อม', needHN:true,
+      reasonLabel:'สิ่งที่ไม่พร้อม', reasons:['ยา','เวชภัณฑ์','เครื่องมือ (เช่น เครื่องดมยา/Monitor)','อุปกรณ์สำหรับระงับความรู้สึก'] },
+  ]},
+  { name:'ระหว่างและหลังระงับความรู้สึก', items:[
+    { id:'cpr', kpi:'6.1', short:'ภาวะคุกคามชีวิต (CPR)', label:'ภาวะคุกคามชีวิต ต้องช่วยฟื้นคืนชีพ', needHN:true, cprTimes:true },
+    { id:'unplanned', kpi:'6.2', short:'Unplanned ICU / Unexpected death', label:'อาการเปลี่ยนแปลงโดยไม่ได้คาดการณ์', needHN:true,
+      reasonLabel:'ชนิด', reasons:['Unplanned ICU','Unexpected death'] },
+    { id:'complication', kpi:'6.3', short:'ภาวะแทรกซ้อนที่ป้องกันได้', label:'ภาวะแทรกซ้อนที่ป้องกันได้จากการระงับความรู้สึก', needHN:true,
+      reasonLabel:'ชนิดภาวะแทรกซ้อน', reasons:['Aspiration','Hypoxia/Desaturation','Difficult airway ที่ไม่ได้ประเมิน/เตรียม','ฟัน/ปาก/ริมฝีปากบาดเจ็บ','Hypothermia','Awareness','High/Total spinal','อื่น ๆ (ระบุในรายละเอียด)'] },
+    { id:'reintubation', kpi:'6.4', short:'Re-intubation ใน PACU', label:'ใส่ท่อช่วยหายใจซ้ำในห้องพักฟื้น', needHN:true },
+    { id:'transfer', kpi:'6.5', short:'อุบัติการณ์ระหว่างเคลื่อนย้าย', label:'อุบัติการณ์ไม่พึงประสงค์ระหว่างส่งต่อ/เคลื่อนย้าย', needHN:true,
+      reasonLabel:'ลักษณะ', reasons:['อุปกรณ์/ออกซิเจนไม่พร้อมหรือไม่พอ','อุปกรณ์ฉุกเฉินระหว่างเคลื่อนย้ายไม่พร้อมใช้','สื่อสารข้อมูลไม่ครบ หน่วยรับเตรียมไม่เหมาะสม','สาย/ท่อเลื่อนหลุด','อื่น ๆ (ระบุในรายละเอียด)'] },
+    { id:'positioning_injury', kpi:'6.10', short:'บาดเจ็บจากจัดท่า/ผูกยึด/อุปกรณ์', label:'บาดเจ็บจากการจัดท่า ผูกยึด หรือใช้อุปกรณ์/เครื่องมือ', needHN:true,
+      reasonLabel:'สาเหตุ', reasons:['การจัดท่า','การผูกยึด','อุปกรณ์/เครื่องมือ/วัสดุทางการแพทย์'] },
+  ]},
+  { name:'ความคลาดเคลื่อนและความปลอดภัย', items:[
+    { id:'med_error', kpi:'6.6', short:'Med error ยา/สารน้ำ', label:'ความคลาดเคลื่อนการบริหารยา/สารน้ำ', needHN:true, severity:true,
+      reasonLabel:'ผิดหลักข้อ', reasons:['ผิดชนิดยา','ผิดคน','ผิดขนาด','ผิดทาง','ผิดเวลา/ความถี่','บันทึกไม่ถูกต้อง','ไม่ได้ตรวจประวัติแพ้ยา','ไม่ได้ตรวจปฏิกิริยาระหว่างยา','อื่น ๆ'] },
+    { id:'blood_error', kpi:'6.7', short:'ความคลาดเคลื่อนการให้เลือด', label:'ความคลาดเคลื่อนการให้เลือด', needHN:true, severity:true,
+      reasonLabel:'ลักษณะ', reasons:['ผิดคน','ผิดถุงเลือด','ผิดหมู่เลือด','ผิดชนิดของเลือด'] },
+    { id:'wrong_id', kpi:'6.8', short:'ระบุตัวผู้ป่วยผิดคน', label:'ระบุตัวผู้ป่วยผิดคน', needHN:true },
+    { id:'fall', kpi:'6.9', short:'พลัดตกหกล้ม', label:'พลัดตกหกล้ม', needHN:true, severity:true,
+      reasonLabel:'สถานที่', reasons:['ห้องผ่าตัด/ห้องหัตถการ','ห้องพักฟื้น','ระหว่างเคลื่อนย้าย','ห้องน้ำ','จุดบริการอื่นของหน่วยงาน'] },
+  ]},
+  { name:'ความพร้อมและยาเสพติด (ไม่ต้องระบุผู้ป่วย)', items:[
+    { id:'resus_unready', kpi:'5.6', short:'ไม่พร้อมช่วยชีวิตฉุกเฉิน', label:'ความไม่พร้อมต่อการช่วยชีวิตฉุกเฉิน', needHN:false,
+      reasonLabel:'สิ่งที่ไม่พร้อม', reasons:['ทีม','สถานที่','อุปกรณ์','ยา'] },
+    { id:'narcotic', kpi:'5.7', short:'ยาเสพติดประเภท 2', label:'อุบัติการณ์ยาเสพติดให้โทษประเภท 2', needHN:false,
+      reasonLabel:'ลักษณะ', reasons:['หลอดยาหลังใช้สูญหาย','ยาสำรองไม่ครบตามจำนวน','ไม่ได้บันทึกแบบฟอร์มเบิกใช้','ตู้จัดเก็บไม่ล็อก','อื่น ๆ (ระบุในรายละเอียด)'] },
+  ]},
+];
+const QI_EVENTS = {};
+QI_EVENT_GROUPS.forEach(g => g.items.forEach(it => QI_EVENTS[it.id] = it));
+
+const qiModule = (function(){
+  const sec = document.getElementById('screen-qi');
+  const dateEl = document.getElementById('qiDate');
+  const shiftEl = document.getElementById('qiShift');
+  const locEl = document.getElementById('qiLoc');
+  const hnEl = document.getElementById('qiHN');
+  const anesEl = document.getElementById('qiAnes');
+  const reporterEl = document.getElementById('qiReporter');
+  const chipsWrap = document.getElementById('qiChips');
+  const detailsWrap = document.getElementById('qiDetails');
+  const dupBox = document.getElementById('qiDupBox');
+  const dupConfirmWrap = document.getElementById('qiDupConfirmWrap');
+  const dupConfirm = document.getElementById('qiDupConfirm');
+  const submitBtn = document.getElementById('qiSubmit');
+  const submitHint = document.getElementById('qiSubmitHint');
+  let pane = 'event';
+  let selected = [];          // ลำดับ Event ที่เลือก
+  let fields = {};            // ค่าที่กรอกในแต่ละ Event
+  let existingForCase = [];   // Event ที่มีอยู่แล้วของ HN + วันที่นี้
+  let adminPin = null;
+
+  NURSE_LOCATIONS.forEach(l => { const o = document.createElement('option'); o.value = l; o.textContent = l; locEl.appendChild(o); });
+  reporterEl.value = storeGet(QI_REPORTER_KEY) || '';
+
+  function setDate(el, iso){ el.dataset.iso = iso; el.value = formatDMY(iso); }
+  setDate(dateEl, localTodayStr());
+  dateEl.addEventListener('click', () => openCalendarFor(dateEl, () => { checkDup(); validate(); }, { allowNav:true, maxIso: localTodayStr() }));
+
+  /* ---------- chips ---------- */
+  chipsWrap.innerHTML = QI_EVENT_GROUPS.map(g => `
+    <div class="ev-group-title">${g.name}</div>
+    <div class="chip-grid">${g.items.map(it => `<div class="chip" data-ev="${it.id}"><span class="k">${it.kpi}</span>${it.short}</div>`).join('')}</div>`).join('');
+  chipsWrap.addEventListener('click', e => {
+    const chip = e.target.closest('.chip'); if(!chip) return;
+    const id = chip.dataset.ev;
+    if(selected.includes(id)){ selected = selected.filter(x => x !== id); }
+    else { selected.push(id); fields[id] = fields[id] || {}; }
+    chip.classList.toggle('on', selected.includes(id));
+    renderDetails(); updateVisibility(); renderDup(); checkDup(); validate();
+  });
+
+  function needsPatient(){ return selected.some(id => QI_EVENTS[id].needHN); }
+  function updateVisibility(){
+    document.getElementById('qiPatientCard').style.display = needsPatient() ? '' : 'none';
+    document.getElementById('qiReporterCard').style.display = selected.length ? '' : 'none';
+  }
+
+  /* ---------- รายละเอียดแต่ละ Event ---------- */
+  function renderDetails(){
+    detailsWrap.innerHTML = '';
+    selected.forEach(id => {
+      const ev = QI_EVENTS[id]; const f = fields[id];
+      const card = document.createElement('div');
+      card.className = 'card ev-detail'; card.dataset.ev = id;
+      let html = `<h4>${ev.kpi} · ${ev.label}</h4>`;
+      if(ev.reasons){
+        html += `<label class="field-label">${ev.reasonLabel}</label><select data-f="reason" style="margin-bottom:12px;"><option value="">-- เลือก --</option>${ev.reasons.map(r => `<option${f.reason===r?' selected':''}>${r}</option>`).join('')}</select>`;
+      }
+      if(ev.severity){
+        html += `<label class="field-label">ระดับความรุนแรง</label><div class="sev-row">${SEVERITY_LEVELS.map(s => `<button type="button" class="sev${'EFGHI'.includes(s)?' ei':''}${f.severity===s?' on':''}" data-sev="${s}">${s}</button>`).join('')}</div>
+          <div class="hint" style="margin-bottom:12px;">A–D ไม่เกิดอันตราย/near miss · <b>E–I</b> เกิดอันตราย ต้องรักษาเพิ่ม</div>`;
+      }
+      if(ev.cprTimes){
+        html += `<div class="time-row"><div><label class="field-label">เวลาที่ตรวจพบ</label><input type="time" class="qi-input" data-f="detectTime" value="${f.detectTime||''}"></div>
+          <div><label class="field-label">เวลาเริ่ม CPR</label><input type="time" class="qi-input" data-f="cprTime" value="${f.cprTime||''}"></div></div>
+          <div class="cpr-result hint" style="margin:-4px 0 12px;"></div>`;
+      }
+      html += `<label class="field-label">รายละเอียด / การจัดการเบื้องต้น ${ev.reasons && /อื่น/.test(f.reason||'') ? '(ระบุ)' : '(ถ้ามี)'}</label><textarea class="qi-input" data-f="detail" style="margin-bottom:0;" placeholder="สั้น ๆ ไม่ต้องระบุชื่อบุคคล">${escHtml(f.detail||'')}</textarea>`;
+      card.innerHTML = html;
+      detailsWrap.appendChild(card);
+      updateCprResult(card, id);
+    });
+  }
+  function cprMinutes(f){
+    if(!f.detectTime || !f.cprTime) return null;
+    const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+    let d = toMin(f.cprTime) - toMin(f.detectTime);
+    if(d < 0) d += 1440; // คร่อมเที่ยงคืน
+    return d;
+  }
+  function updateCprResult(card, id){
+    const el = card.querySelector('.cpr-result'); if(!el) return;
+    const m = cprMinutes(fields[id]);
+    el.innerHTML = m === null ? 'ระบบคำนวณระยะเวลาให้อัตโนมัติ' :
+      (m <= 4 ? `<span style="color:var(--green);font-weight:600;">เริ่ม CPR ภายใน ${m} นาที ✓ ผ่านเกณฑ์ 4 นาที</span>`
+              : `<span style="color:var(--red);font-weight:600;">เริ่ม CPR ใน ${m} นาที · เกินเกณฑ์ 4 นาที</span>`);
+  }
+  detailsWrap.addEventListener('input', e => {
+    const card = e.target.closest('.ev-detail'); if(!card || !e.target.dataset.f) return;
+    fields[card.dataset.ev][e.target.dataset.f] = e.target.value;
+    updateCprResult(card, card.dataset.ev);
+    validate();
+  });
+  detailsWrap.addEventListener('click', e => {
+    const b = e.target.closest('.sev'); if(!b) return;
+    const card = b.closest('.ev-detail');
+    fields[card.dataset.ev].severity = b.dataset.sev;
+    card.querySelectorAll('.sev').forEach(x => x.classList.toggle('on', x === b));
+    validate();
+  });
+
+  /* ---------- ตรวจข้อมูลซ้ำ (HN + วันที่) ---------- */
+  let dupTimer = null, dupSeq = 0;
+  function checkDup(){
+    clearTimeout(dupTimer);
+    dupTimer = setTimeout(runDupCheck, 400);
+  }
+  async function runDupCheck(){
+    const hn = hnEl.value.trim(), date = dateEl.dataset.iso;
+    const seq = ++dupSeq;
+    if(!hn || !date || !needsPatient()){ existingForCase = []; renderDup(); return; }
+    const local = loadQueue().filter(e => e.app === 'qi' && e.type === 'qi_event' && !e.deleted && e.hn === hn && e.date === date)
+      .flatMap(e => e.events.map(ev => ({ type: ev.type, shift: e.shift, reporter: e.reporter, location: e.location, local:true })));
+    let remote = [];
+    const url = getQiUrl();
+    if(url && navigator.onLine){
+      try{
+        const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 6000);
+        const res = await fetch(`${url}?action=qi_check&hn=${encodeURIComponent(hn)}&date=${date}`, { signal: ctl.signal });
+        clearTimeout(t);
+        const data = await res.json();
+        remote = (data.events || []);
+      }catch(err){}
+    }
+    if(seq !== dupSeq) return;
+    // รวมรายการ: ตัดตัวที่ซ้ำกัน (ที่อยู่ทั้งในเครื่องและในชีตแล้ว)
+    const seen = new Set(); existingForCase = [];
+    [...remote, ...local].forEach(x => { const k = x.type + '|' + x.shift + '|' + x.reporter; if(!seen.has(k)){ seen.add(k); existingForCase.push(x); } });
+    renderDup();
+  }
+  function overlapTypes(){ return selected.filter(id => existingForCase.some(x => x.type === id)); }
+  function renderDup(){
+    if(!existingForCase.length){ dupBox.innerHTML = ''; dupConfirmWrap.style.display = 'none'; dupConfirm.checked = false; validate(); return; }
+    const lines = existingForCase.map(x => `• ${QI_EVENTS[x.type] ? QI_EVENTS[x.type].short : x.type} — ${escHtml(x.reporter||'-')} เวร${escHtml(x.shift||'-')}`).join('<br>');
+    const ov = overlapTypes();
+    dupBox.innerHTML = `<div class="warn-box"><b>HN นี้ วันที่นี้ มี Event บันทึกไว้แล้ว</b><br>${lines}${ov.length ? '<br><br>ถ้าเป็นเหตุการณ์เดียวกัน (เช่น ส่งต่อเวร) ไม่ต้องบันทึกซ้ำ' : ''}</div>`;
+    dupConfirmWrap.style.display = ov.length ? 'flex' : 'none';
+    if(!ov.length) dupConfirm.checked = false;
+    validate();
+  }
+  hnEl.addEventListener('input', () => { checkDup(); validate(); });
+  [shiftEl, locEl, anesEl].forEach(el => el.addEventListener('change', validate));
+  reporterEl.addEventListener('input', validate);
+  dupConfirm.addEventListener('change', validate);
+
+  /* ---------- ตรวจความครบถ้วน ---------- */
+  function missingList(){
+    const miss = [];
+    if(!selected.length) return ['เลือกเหตุการณ์อย่างน้อย 1 รายการ'];
+    if(!dateEl.dataset.iso) miss.push('วันที่');
+    if(!shiftEl.value) miss.push('เวร');
+    if(!locEl.value) miss.push('จุดปฏิบัติงาน');
+    if(needsPatient()){
+      if(!hnEl.value.trim()) miss.push('HN');
+      if(!anesEl.value) miss.push('ชนิดการระงับความรู้สึก');
+    }
+    selected.forEach(id => {
+      const ev = QI_EVENTS[id], f = fields[id];
+      if(ev.reasons && !f.reason) miss.push(`${ev.reasonLabel} (${ev.kpi})`);
+      if(ev.severity && !f.severity) miss.push(`ระดับความรุนแรง (${ev.kpi})`);
+      if(ev.cprTimes && (!f.detectTime || !f.cprTime)) miss.push('เวลาที่ตรวจพบ/เริ่ม CPR');
+      if(ev.reasons && /อื่น/.test(f.reason||'') && !(f.detail||'').trim()) miss.push(`รายละเอียด (${ev.kpi})`);
+    });
+    if(!reporterEl.value.trim()) miss.push('ผู้รายงาน');
+    if(overlapTypes().length && !dupConfirm.checked) miss.push('ยืนยันว่าไม่ใช่รายการซ้ำ');
+    return miss;
+  }
+  function validate(){
+    const miss = missingList();
+    submitBtn.disabled = miss.length > 0;
+    submitHint.textContent = miss.length ? 'ยังขาด: ' + miss.join(', ') : '';
+  }
+
+  /* ---------- บันทึก ---------- */
+  submitBtn.addEventListener('click', () => {
+    if(missingList().length) return;
+    const entryId = uid();
+    const patient = needsPatient();
+    const entry = {
+      entryId, app:'qi', type:'qi_event',
+      date: dateEl.dataset.iso, shift: shiftEl.value, location: locEl.value,
+      hn: patient ? hnEl.value.trim() : '', anesType: patient ? anesEl.value : '',
+      reporter: reporterEl.value.trim(),
+      events: selected.map((id, i) => {
+        const ev = QI_EVENTS[id], f = fields[id];
+        const out = { eventId: `${entryId}_${i}`, type: id, kpi: ev.kpi, reason: f.reason || '', severity: f.severity || '', detail: (f.detail||'').trim() };
+        if(ev.cprTimes){ const m = cprMinutes(f); out.detectTime = f.detectTime; out.cprTime = f.cprTime; out.minutes = m; out.within4 = m !== null && m <= 4; }
+        return out;
+      }),
+      timestamp: new Date().toISOString(), synced:false
+    };
+    storeSet(QI_REPORTER_KEY, entry.reporter);
+    const q = loadQueue(); q.push(entry); saveQueue(q);
+    // ล้างฟอร์ม (คงวันที่ เวร จุด และชื่อผู้รายงานไว้ บันทึกเคสถัดไปได้เร็ว)
+    selected = []; fields = {}; existingForCase = [];
+    hnEl.value = ''; anesEl.value = ''; dupConfirm.checked = false;
+    chipsWrap.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    renderDetails(); renderDup(); updateVisibility(); validate();
+    window.scrollTo({top:0, behavior:'smooth'});
+    showToast(`บันทึก ${entry.events.length} Event แล้ว กำลังซิงก์...`);
+    attemptSync(); renderHistory();
+  });
+
+  /* ---------- ประวัติ ---------- */
+  function renderHistory(){
+    const box = document.getElementById('qiHistory');
+    const since = new Date(Date.now() - 7*864e5).toISOString();
+    const list = loadQueue().filter(e => e.app === 'qi' && e.type === 'qi_event' && !e.deleted && e.timestamp >= since)
+      .sort((a,b) => b.timestamp.localeCompare(a.timestamp));
+    if(!list.length){ box.innerHTML = '<div class="empty">ยังไม่มี Event ที่บันทึกจากเครื่องนี้ใน 7 วันล่าสุด</div>'; return; }
+    box.innerHTML = list.map(e => {
+      const time = new Date(e.timestamp).toLocaleString('th-TH', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
+      const evs = e.events.map(ev => {
+        const d = QI_EVENTS[ev.type];
+        const extra = [ev.reason, ev.severity ? 'ระดับ ' + ev.severity : '', ev.type === 'cpr' && ev.minutes !== null ? ev.minutes + ' นาที' : ''].filter(Boolean).join(' · ');
+        return `<div style="font-size:13px;margin-top:4px;"><b style="color:var(--qi-d);">${ev.kpi}</b> ${d ? d.short : ev.type}${extra ? ` <span style="color:var(--text-3);">(${escHtml(extra)})</span>` : ''}</div>`;
+      }).join('');
+      return `<div class="hist-item">
+        <div class="hist-top"><div class="hist-loc">${e.hn ? 'HN ' + escHtml(e.hn) : 'ไม่ระบุผู้ป่วย'} · ${formatDMY(e.date)}</div>
+          <button class="hist-del" data-del="${e.entryId}">ลบ</button></div>
+        <div class="hist-time">${escHtml(e.location)} · เวร${escHtml(e.shift)} · บันทึก ${time}</div>
+        ${evs}
+        ${e.synced ? '' : '<div class="hist-pending">รอซิงก์</div>'}
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('qiHistory').addEventListener('click', e => {
+    const b = e.target.closest('[data-del]'); if(!b) return;
+    if(b.dataset.armed !== '1'){ b.dataset.armed = '1'; b.textContent = 'แตะอีกครั้งเพื่อลบ'; setTimeout(() => { b.dataset.armed = ''; b.textContent = 'ลบ'; }, 3000); return; }
+    const q = loadQueue();
+    const it = q.find(x => x.entryId === b.dataset.del);
+    if(it){
+      if(it.synced){ it.deleted = true; it.deleteSynced = false; }
+      else { q.splice(q.indexOf(it), 1); } // ยังไม่ได้ส่ง ลบทิ้งในเครื่องได้เลย
+      saveQueue(q);
+    }
+    showToast('ลบแล้ว'); attemptSync(); renderHistory();
+  });
+
+  /* ---------- Dashboard ---------- */
+  const monthEl = document.getElementById('qiDashMonth');
+  monthEl.value = localTodayStr().slice(0,7);
+  monthEl.max = localTodayStr().slice(0,7);
+  document.getElementById('qiDashRefresh').addEventListener('click', loadDash);
+  monthEl.addEventListener('change', loadDash);
+
+  async function fetchDash(month){
+    const url = getQiUrl();
+    if(!url) throw new Error('nourl');
+    const res = await fetch(`${url}?action=qi_dashboard&month=${month}`);
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'error');
+    return data;
+  }
+  const STATUS_TXT = { pass:'ผ่าน', fail:'ไม่ผ่าน', none:'ไม่มีเหตุการณ์', na:'รอข้อมูล' };
+  const TH_MON = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const fmtNum = (v, dp=2) => v === null || v === undefined ? '—' : Number(v).toLocaleString('th-TH', {maximumFractionDigits:dp});
+  let lastDash = null;
+
+  async function loadDash(){
+    const box = document.getElementById('qiDash');
+    if(!getQiUrl()){ box.innerHTML = '<div class="empty">ยังไม่ได้ตั้งค่า URL ตัวชี้วัด (แตะ ⚙ มุมขวาบน)</div>'; return; }
+    if(!navigator.onLine){ box.innerHTML = '<div class="empty">ออฟไลน์อยู่ · ต้องต่ออินเทอร์เน็ตเพื่อดู Dashboard</div>'; return; }
+    box.innerHTML = '<div class="empty">กำลังโหลด...</div>';
+    try{ lastDash = await fetchDash(monthEl.value || localTodayStr().slice(0,7)); renderDash(lastDash); }
+    catch(err){ box.innerHTML = '<div class="empty">โหลดข้อมูลไม่สำเร็จ ลองกด "โหลด" อีกครั้ง</div>'; }
+  }
+
+  function renderDash(d){
+    const box = document.getElementById('qiDash');
+    const s = d.summary;
+    const [yy, mm] = d.month.split('-').map(Number);
+    const monthTxt = `${TH_MON[mm-1]} ${yy+543}`;
+    let html = '';
+    if(d.missingDays.length){
+      const days = d.missingDays.map(x => Number(x.slice(8))).join(', ');
+      html += `<div class="warn-box" style="margin-bottom:14px;">ยังไม่ได้กรอกยอดผู้ป่วย ${d.missingDays.length} วัน (วันที่ ${days}) · อัตราที่คำนวณจะสูงกว่าความจริงจนกว่าจะกรอกครบ</div>`;
+    }
+    html += `<div class="stat-grid">
+      <div class="stat"><div class="n">${fmtNum(s.cases,0)}</div><div class="l">ผู้ป่วย<br>${monthTxt}</div></div>
+      <div class="stat"><div class="n">${fmtNum(s.events,0)}</div><div class="l">Event<br>ทั้งหมด</div></div>
+      <div class="stat"><div class="n">${s.daysVerified}/${s.daysElapsed}</div><div class="l">วันที่ตรวจสอบ<br>Event ครบแล้ว</div></div>
+    </div>`;
+    // ตัวชี้วัดสะสมเดือน
+    html += `<div class="card"><div class="chart-title">ตัวชี้วัดสะสม ${monthTxt}</div>`;
+    d.kpis.forEach(k => {
+      const val = k.type === 'count' ? `${fmtNum(k.value,0)} ครั้ง` : (k.value === null ? '—' : `${fmtNum(k.value)}%`);
+      const ab = k.type === 'count' ? '' : `<div class="kpi-ab">${k.a} / ${k.b ?? 0}</div>`;
+      html += `<div class="kpi-row"><div class="kpi-name"><span class="kpi-code">${k.code}</span>${k.name}<div class="kpi-tgt">เป้าหมาย ${k.target}</div></div>
+        <div class="kpi-right"><div class="kpi-val">${val}</div>${ab}<span class="st st-${k.status}">${k.note && k.status !== 'pass' && k.status !== 'fail' ? k.note : STATUS_TXT[k.status]}</span></div></div>`;
+    });
+    html += `<div class="hint" style="margin-top:6px;">สูตร (A × 100) / B · 6.6, 6.7, 6.9 ตัวหาร = จำนวนเหตุการณ์ทั้งหมดระดับ A–I · 6.5, 6.10 ตัวหาร = ผู้ป่วยทั้งหมด (นิยามเชิงปฏิบัติการของหน่วยงาน)</div></div>`;
+    // รายวัน
+    const maxC = Math.max(1, ...d.daily.map(x => x.cases || 0));
+    const maxE = Math.max(1, ...d.daily.map(x => x.events || 0));
+    const elapsed = s.daysElapsed;
+    html += `<div class="card"><div class="chart-title">จำนวนผู้ป่วยรายวัน</div><div class="bars">${d.daily.map((x,i) => {
+        const future = i+1 > elapsed;
+        if(future) return '<div class="b" style="height:0"></div>';
+        if(x.cases === null) return `<div class="b miss" title="${i+1}: ยังไม่กรอกยอด"></div>`;
+        return `<div class="b c" style="height:${x.cases/maxC*100}%" title="${i+1}: ${x.cases} ราย"></div>`;
+      }).join('')}</div><div class="bar-labels"><span>1</span><span>${Math.ceil(d.daily.length/2)}</span><span>${d.daily.length}</span></div>
+      <div class="chart-title" style="margin-top:16px;">จำนวน Event รายวัน</div><div class="bars" style="height:60px;">${d.daily.map((x,i) =>
+        `<div class="b e" style="height:${(x.events||0)/maxE*100}%" title="${i+1}: ${x.events} Event"></div>`).join('')}</div>
+      <div class="bar-labels"><span>1</span><span>${Math.ceil(d.daily.length/2)}</span><span>${d.daily.length}</span></div>
+      <div class="legend"><span><i style="background:#f3b48f"></i>ผู้ป่วย</span><span><i style="background:var(--qi)"></i>Event</span><span><i style="background:#e3e1d9"></i>ยังไม่กรอกยอด</span></div>
+      <div class="hint" style="margin-top:8px;">ตัวเลขรายวันแสดงเป็นจำนวน ไม่คิดเป็นอัตรา เพราะตัวหารรายวันเล็ก ทำให้อัตราแกว่งมาก</div></div>`;
+    // แนวโน้ม 12 เดือน
+    const kpiOpts = d.kpis.map(k => `<option value="${k.code}">${k.code} ${k.name}</option>`).join('');
+    html += `<div class="card"><div class="chart-title">แนวโน้ม 12 เดือน</div>
+      <select id="qiTrendKpi" style="margin-bottom:12px;font-size:13px;">${kpiOpts}</select><div id="qiTrend"></div></div>`;
+    box.innerHTML = html;
+    const sel = document.getElementById('qiTrendKpi');
+    const firstFail = d.kpis.find(k => k.status === 'fail');
+    sel.value = firstFail ? firstFail.code : '6.3';
+    sel.addEventListener('change', () => renderTrend(d, sel.value));
+    renderTrend(d, sel.value);
+  }
+  function renderTrend(d, code){
+    const k = d.kpis.find(x => x.code === code);
+    const vals = d.trend.map(t => t.values[code]);
+    const max = Math.max(...vals.filter(v => v !== null && v !== undefined), 0);
+    const unit = k.type === 'count' ? '' : '%';
+    document.getElementById('qiTrend').innerHTML = `
+      <div class="trend-vals">${vals.map(v => `<span>${v === null || v === undefined ? '—' : fmtNum(v, 1)}</span>`).join('')}</div>
+      <div class="bars" style="height:80px;">${vals.map(v => `<div class="b t" style="height:${max > 0 && v ? v/max*100 : 0}%"></div>`).join('')}</div>
+      <div class="trend-labels">${d.trend.map(t => `<span>${TH_MON[Number(t.month.slice(5))-1]}</span>`).join('')}</div>
+      <div class="hint" style="margin-top:8px;">${k.type === 'count' ? 'จำนวนครั้งต่อเดือน' : 'ผลลัพธ์ ' + unit + ' ต่อเดือน'} · เป้าหมาย ${k.target} · "—" = ไม่มีข้อมูล/ไม่มีเหตุการณ์</div>`;
+  }
+
+  /* ---------- Admin ---------- */
+  const adminDateEl = document.getElementById('qiAdminDate');
+  const totalEl = document.getElementById('qiTotal');
+  const ettEl = document.getElementById('qiEtt');
+  const verifiedEl = document.getElementById('qiVerified');
+  const adminNameEl = document.getElementById('qiAdminName');
+  adminNameEl.value = storeGet(QI_ADMIN_NAME_KEY) || '';
+  setDate(adminDateEl, localTodayStr());
+  adminDateEl.addEventListener('click', () => openCalendarFor(adminDateEl, prefillAdmin, { allowNav:true, maxIso: localTodayStr() }));
+
+  document.getElementById('qiUnlock').addEventListener('click', async () => {
+    const pin = document.getElementById('qiPin').value.trim();
+    if(!pin) return;
+    const url = getQiUrl();
+    if(!url){ showToast('ยังไม่ได้ตั้งค่า URL ตัวชี้วัด (แตะ ⚙)'); return; }
+    if(!navigator.onLine){ showToast('ต้องต่ออินเทอร์เน็ตเพื่อตรวจสอบ PIN'); return; }
+    try{
+      const res = await fetch(`${url}?action=qi_verify_pin&pin=${encodeURIComponent(pin)}`);
+      const data = await res.json();
+      if(!data.ok){ showToast('PIN ไม่ถูกต้อง'); return; }
+      adminPin = pin;
+      document.getElementById('qiLockCard').style.display = 'none';
+      document.getElementById('qiAdminBody').style.display = '';
+      loadAdminMonth();
+    }catch(err){ showToast('ตรวจสอบ PIN ไม่สำเร็จ ลองใหม่อีกครั้ง'); }
+  });
+
+  let adminMonthData = null;
+  async function loadAdminMonth(){
+    const box = document.getElementById('qiAdminDays');
+    const month = (adminDateEl.dataset.iso || localTodayStr()).slice(0,7);
+    const [yy, mm] = month.split('-').map(Number);
+    document.getElementById('qiAdminMonthTitle').textContent = `สถานะการกรอกยอด ${TH_MON[mm-1]} ${yy+543} (แตะวันที่เพื่อแก้ไข)`;
+    try{
+      adminMonthData = await fetchDash(month);
+      // รวมรายการที่ยังรอซิงก์จากเครื่องนี้ให้เห็นทันที
+      const pend = loadQueue().filter(e => e.app === 'qi' && e.type === 'qi_daily' && !e.synced && e.date.startsWith(month));
+      pend.forEach(p => { const row = adminMonthData.daily.find(x => x.date === p.date); if(row){ row.cases = p.totalCases; row.ett = p.ettCases; row.verified = p.verified; row.pending = true; } });
+      const first = new Date(yy, mm-1, 1).getDay();
+      const today = localTodayStr();
+      box.innerHTML = `<div class="cal-weekdays"><span>อา</span><span>จ</span><span>อ</span><span>พ</span><span>พฤ</span><span>ศ</span><span>ส</span></div>
+        <div class="day-list">${'<div></div>'.repeat(first)}${adminMonthData.daily.map(x => {
+          const cls = x.date > today ? 'future' : x.cases === null ? 'miss' : x.verified ? 'ok' : 'part';
+          return `<div class="day-cell ${cls}" data-day="${x.date}"><b>${Number(x.date.slice(8))}</b>${x.cases === null ? '–' : x.cases}${x.pending ? '*' : ''}</div>`;
+        }).join('')}</div>
+        <div class="legend"><span><i style="background:var(--green-l)"></i>กรอกแล้ว + ตรวจสอบแล้ว</span><span><i style="background:var(--amber-l)"></i>กรอกยอดแล้ว ยังไม่ตรวจสอบ</span><span><i style="background:var(--red-l)"></i>ยังไม่กรอก</span><span>* รอซิงก์</span></div>`;
+      prefillAdmin(true);
+    }catch(err){ box.innerHTML = '<div class="empty" style="padding:16px;">โหลดสถานะไม่สำเร็จ (กรอกยอดได้ตามปกติ)</div>'; }
+  }
+  function prefillAdmin(skipReload){
+    const iso = adminDateEl.dataset.iso;
+    if(adminMonthData && adminMonthData.month !== iso.slice(0,7) && skipReload !== true){ loadAdminMonth(); return; }
+    const row = adminMonthData && adminMonthData.daily.find(x => x.date === iso);
+    totalEl.value = row && row.cases !== null ? row.cases : '';
+    ettEl.value = row && row.ett !== null ? row.ett : '';
+    verifiedEl.checked = !!(row && row.verified);
+  }
+  document.getElementById('qiAdminDays').addEventListener('click', e => {
+    const c = e.target.closest('[data-day]'); if(!c) return;
+    setDate(adminDateEl, c.dataset.day); prefillAdmin(true);
+    adminDateEl.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+  document.getElementById('qiAdminSave').addEventListener('click', () => {
+    const date = adminDateEl.dataset.iso;
+    const total = totalEl.value === '' ? NaN : Number(totalEl.value);
+    const ett = ettEl.value === '' ? NaN : Number(ettEl.value);
+    const name = adminNameEl.value.trim();
+    if(!date || !Number.isInteger(total) || total < 0 || !Number.isInteger(ett) || ett < 0){ showToast('กรุณากรอกยอดผู้ป่วยและยอดใส่ ETT เป็นจำนวนเต็ม'); return; }
+    if(ett > total){ showToast('ยอดใส่ ETT มากกว่ายอดผู้ป่วยทั้งหมดไม่ได้'); return; }
+    if(!name){ showToast('กรุณากรอกชื่อผู้บันทึก'); return; }
+    storeSet(QI_ADMIN_NAME_KEY, name);
+    const q = loadQueue();
+    q.push({ entryId: uid(), app:'qi', type:'qi_daily', date, totalCases: total, ettCases: ett, verified: verifiedEl.checked,
+      admin: name, pin: adminPin, timestamp: new Date().toISOString(), synced:false });
+    saveQueue(q);
+    showToast(`บันทึกยอดวันที่ ${formatDMY(date)} แล้ว`);
+    attemptSync();
+    setTimeout(loadAdminMonth, 2500);
+  });
+
+  /* ---------- แท็บ ---------- */
+  function show(name){
+    pane = name;
+    sec.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.qtab === name));
+    sec.querySelectorAll('.qi-pane').forEach(p => p.style.display = p.dataset.qpane === name ? 'block' : 'none');
+    if(name === 'history') renderHistory();
+    if(name === 'dash') loadDash();
+  }
+  sec.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => show(t.dataset.qtab)));
+
+  return {
+    activate(){ document.getElementById('footerBar').classList.add('hidden'); show('event'); validate(); checkDup(); },
+    deactivate(){},
+    renderHistory(){ if(pane === 'history') renderHistory(); }
+  };
+})();
+
+/* =====================================================================
+   Navigation between Home / Assistant / Nurse / QI
 ===================================================================== */
 const HEADER_CONFIG = {
   home:      {title:'P4P Anes', accent:'var(--teal)', showBack:false},
   assistant: {title:'P4P ผู้ช่วย',  accent:'var(--teal)', showBack:true},
   nurse:     {title:'P4P Nurse',    accent:'var(--indigo)', showBack:true},
+  qi:        {title:'ตัวชี้วัดคุณภาพ (QI)', accent:'var(--qi)', showBack:true},
 };
 
 function goTo(screenId){
@@ -832,9 +1527,10 @@ function goTo(screenId){
   document.getElementById('headerTitle').textContent = conf.title;
   document.getElementById('backBtn').style.display = conf.showBack ? 'flex' : 'none';
   document.querySelector('meta[name="theme-color"]').setAttribute('content',
-    screenId === 'nurse' ? '#5B4FCF' : '#157FA6');
+    screenId === 'nurse' ? '#5B4FCF' : screenId === 'qi' ? '#C2410C' : '#157FA6');
 
   assistantModule.deactivate(); nurseModule.deactivate();
+  try{ qiModule.deactivate(); }catch(e){}
   document.getElementById('footerBar').classList.add('hidden');
 
   if(screenId === 'assistant'){
@@ -847,6 +1543,11 @@ function goTo(screenId){
     document.documentElement.style.setProperty('--btn','var(--indigo)');
     document.documentElement.style.setProperty('--tot-c','var(--indigo-d)');
     nurseModule.activate();
+  } else if(screenId === 'qi'){
+    document.documentElement.style.setProperty('--focus','var(--qi)');
+    document.documentElement.style.setProperty('--btn','var(--qi)');
+    document.documentElement.style.setProperty('--tot-c','var(--qi-d)');
+    qiModule.activate();
   }
 }
 document.querySelectorAll('[data-goto]').forEach(el => {
@@ -873,6 +1574,15 @@ async function attemptSync(){
     const deleteSyncedIds = [];
     for(const entry of pending){
       try{
+        if(entry.app === 'qi'){
+          // ข้อมูลตัวชี้วัดคุณภาพ ส่งไปคนละ Web App กับ P4P (QI_Code.gs)
+          const qiUrl = getQiUrl();
+          if(!qiUrl) continue;
+          const action = entry.type === 'qi_daily' ? 'qi_daily' : 'qi_event';
+          await postToServer({ action, ...entry }, qiUrl);
+          syncedIds.push(entry.entryId);
+          continue;
+        }
         if(entry.type === 'staffing'){
           await postToServer({ action:'staffing', app: entry.app, entryId: entry.entryId, date: entry.date, shift: entry.shift, staffCount: entry.staffCount, timestamp: entry.timestamp });
         } else {
@@ -882,7 +1592,16 @@ async function attemptSync(){
       }catch(err){}
     }
     for(const entry of pendingDeletes){
-      try{ await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId }); deleteSyncedIds.push(entry.entryId); }catch(err){}
+      try{
+        if(entry.app === 'qi'){
+          const qiUrl = getQiUrl();
+          if(!qiUrl) continue;
+          await postToServer({ action:'qi_event_delete', entryId: entry.entryId }, qiUrl);
+        } else {
+          await postToServer({ action:'delete', app:entry.app, entryId: entry.entryId });
+        }
+        deleteSyncedIds.push(entry.entryId);
+      }catch(err){}
     }
 
     // อ่านคิวล่าสุดอีกครั้งตอนจะบันทึกผล (ไม่ใช้ snapshot เดิมที่อาจเก่าไปแล้วระหว่างรอผลจากเซิร์ฟเวอร์)
@@ -899,12 +1618,13 @@ async function attemptSync(){
     // (ปลอดภัยเรียกทั้งสองโมดูลแม้จะไม่ได้เปิดแท็บประวัติอยู่ตอนนั้น เพราะแค่วาด DOM ที่มีอยู่แล้วใหม่)
     try{ assistantModule.renderHistory(); }catch(e){}
     try{ nurseModule.renderHistory(); }catch(e){}
+    try{ qiModule.renderHistory(); }catch(e){}
   } finally {
     syncInProgress = false;
   }
 }
-function postToServer(payload){
-  const url = getWebAppUrl();
+function postToServer(payload, targetUrl){
+  const url = targetUrl || getWebAppUrl();
   // ใช้ mode 'no-cors' เพราะ Apps Script Web App ตอบกลับผ่าน redirect
   // ที่เบราว์เซอร์บางเครื่องอ่านผลลัพธ์ไม่ได้ (ทั้งที่บันทึกสำเร็จจริงฝั่งเซิร์ฟเวอร์)
   // ภายใต้ no-cors จะอ่านสถานะ (ok/status) ไม่ได้ แต่ถ้าไม่มี error ระดับเครือข่ายเกิดขึ้น
@@ -919,10 +1639,13 @@ function postToServer(payload){
 function setSyncStatus(){
   const url = getWebAppUrl();
   const q = loadQueue();
-  const pendingCount = q.filter(e => (!e.synced && !e.deleted) || (e.deleted && !e.deleteSynced)).length;
+  const isPending = e => (!e.synced && !e.deleted) || (e.deleted && !e.deleteSynced);
+  const pendingCount = q.filter(isPending).length;
+  const qiStuck = !getQiUrl() ? q.filter(e => e.app === 'qi' && isPending(e)).length : 0;
   const dot = document.getElementById('syncDot'); const txt = document.getElementById('syncText');
   dot.classList.remove('off');
   if(!url){ dot.classList.add('off'); txt.textContent = 'ยังไม่ได้ตั้งค่าซิงก์ (แตะ ⚙)'; }
+  else if(qiStuck > 0){ dot.classList.add('off'); txt.textContent = `ตัวชี้วัดค้างส่ง ${qiStuck} รายการ · ยังไม่ได้ตั้งค่า URL ตัวชี้วัด (แตะ ⚙)`; }
   else if(!navigator.onLine){ dot.classList.add('off'); txt.textContent = `ออฟไลน์ · ค้างส่ง ${pendingCount} รายการ`; }
   else if(pendingCount>0){ txt.textContent = `กำลังซิงก์ ${pendingCount} รายการ...`; }
   else{ txt.textContent = 'ซิงก์ข้อมูลล่าสุดแล้ว'; }
@@ -997,11 +1720,13 @@ document.getElementById('resendBtn').addEventListener('click', () => {
 const settingsModal = document.getElementById('settingsModal');
 document.getElementById('settingsBtn').addEventListener('click', () => {
   document.getElementById('webAppUrlInput').value = getWebAppUrl();
+  document.getElementById('qiUrlInput').value = getQiUrl();
   settingsModal.classList.add('show');
 });
 document.getElementById('settingsCancel').addEventListener('click', () => settingsModal.classList.remove('show'));
 document.getElementById('settingsSave').addEventListener('click', () => {
   setWebAppUrl(document.getElementById('webAppUrlInput').value.trim());
+  setQiUrl(document.getElementById('qiUrlInput').value.trim());
   settingsModal.classList.remove('show');
   showToast('บันทึกการตั้งค่าแล้ว');
   attemptSync();
